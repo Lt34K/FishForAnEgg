@@ -34,7 +34,7 @@ local function snapshot(player)
     local d = data[player]
     if not d then return end
     local slots = {}
-    for i,entry in ipairs(d.slots) do
+    for i,entry in pairs(d.slots) do
         if entry then slots[i] = {egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt} end
     end
     stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots})
@@ -214,7 +214,7 @@ local function save(player)
     while busySave[player] do task.wait(.1) end
     busySave[player]=true
     local slots={}
-    for i,e in ipairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt} end end
+    for i,e in pairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt} end end
     local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots}
     local ok,err=pcall(function()
         store:UpdateAsync("P_"..player.UserId,function() return payload end)
@@ -230,7 +230,6 @@ caught.Event:Connect(function(player,rodLevel)
         notify(player,"Inventaire plein (30 œufs). Place tes œufs dans ta base.")
         return
     end
-    local roll=math.random(1,1000)
     local maxEgg=math.min(#Config.Eggs,2+math.floor((rodLevel-1)/2))
     local total=0
     for i=1,maxEgg do total+=Config.Eggs[i].weight end
@@ -297,8 +296,8 @@ Players.PlayerAdded:Connect(function(player)
         end
     end
     if type(saved.slots)=="table" then
-        for i,e in ipairs(saved.slots) do
-            if i<=Config.BaseSlots[d.base] and type(e)=="table" and Config.Eggs[e.egg] then
+        for i,e in pairs(saved.slots) do
+            if type(i)=="number" and i>=1 and i<=Config.BaseSlots[d.base] and type(e)=="table" and Config.Eggs[e.egg] then
                 d.slots[i]={egg=e.egg,hatched=e.hatched==true,readyAt=tonumber(e.readyAt) or os.time()}
             end
         end
@@ -341,7 +340,7 @@ task.spawn(function()
         for player,d in pairs(data) do
             local income=0
             local changed=false
-            for _,entry in ipairs(d.slots) do
+            for _,entry in pairs(d.slots) do
                 if entry then
                     if not entry.hatched and os.time()>=entry.readyAt then
                         entry.hatched=true
