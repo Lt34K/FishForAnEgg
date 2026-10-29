@@ -48,7 +48,11 @@ Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 10)
 
 local state = "idle"
 local function equipped()
-    return player.Character and player.Character:FindFirstChild("Canne en bois") ~= nil
+    if not player.Character then return false end
+    for _,child in ipairs(player.Character:GetChildren()) do
+        if child:IsA("Tool") and child:GetAttribute("RodLevel") then return true end
+    end
+    return false
 end
 local function cast()
     if not equipped() then return end
@@ -102,7 +106,7 @@ end)
 
 local function bindCharacter(character)
     character.ChildRemoved:Connect(function(child)
-        if child.Name == "Canne en bois" then
+        if child:IsA("Tool") and child:GetAttribute("RodLevel") then
             if state ~= "idle" then remote:FireServer("Cancel") end
             state = "idle"
             progress.Visible = false
