@@ -25,7 +25,7 @@ Config.Eggs = {
     {name="Œuf Océan",weight=9,income=25000,hatch=90,color=Color3.fromRGB(250,191,58)},
     {name="Œuf Banquise",weight=1,income=500000,hatch=120,color=Color3.fromRGB(251,75,173)},
 }
--- Six themed habitats; each contains five recognizable animals.
+-- Six themed habitats; each contains eight animals, including rare mythical creatures.
 Config.Habitats = {
     {name="Forêt",minRod=1},
     {name="Montagne et pierre",minRod=3},
@@ -35,13 +35,17 @@ Config.Habitats = {
     {name="Banquise",minRod=11},
 }
 Config.Creatures = {
-    {"Lapin", "Renard", "Écureuil", "Hérisson", "Cerf"},
-    {"Chèvre", "Marmotte", "Loup", "Ours", "Aigle"},
-    {"Fennec", "Suricate", "Scorpion", "Chameau", "Cobra"},
-    {"Salamandre", "Lézard", "Iguane", "Varan", "Dragon de Komodo"},
-    {"Crabe", "Tortue marine", "Dauphin", "Requin", "Baleine"},
-    {"Manchot", "Phoque", "Renard polaire", "Morse", "Ours polaire"},
+    {"Lapin", "Renard", "Écureuil", "Hérisson", "Cerf", "Sanglier", "Licorne sylvestre", "Esprit de la forêt"},
+    {"Chèvre", "Marmotte", "Loup", "Ours", "Aigle", "Lynx", "Griffon", "Golem de pierre"},
+    {"Fennec", "Suricate", "Scorpion", "Chameau", "Cobra", "Dromadaire blanc", "Sphinx", "Phénix des sables"},
+    {"Salamandre", "Lézard", "Iguane", "Varan", "Dragon de Komodo", "Serpent de lave", "Phénix", "Dragon de magma"},
+    {"Crabe", "Tortue marine", "Dauphin", "Requin", "Baleine", "Raie manta", "Kraken", "Léviathan"},
+    {"Manchot", "Phoque", "Renard polaire", "Morse", "Ours polaire", "Harfang des neiges", "Yéti", "Dragon de glace"},
 }
+Config.CreatureRarities = {"Commun", "Commun", "Peu commun", "Rare", "Rare", "Épique", "Légendaire", "Divin"}
+Config.CreatureWeights = {35,25,16,10,7,4,2,1}
+Config.CreaturesPerHabitat = 8
+Config.TotalCreatures = #Config.Creatures * Config.CreaturesPerHabitat
 Config.AnimalColors = {
     {Color3.fromRGB(228,214,193),Color3.fromRGB(220,104,54),Color3.fromRGB(170,99,49),Color3.fromRGB(139,126,112),Color3.fromRGB(167,117,73)},
     {Color3.fromRGB(211,206,189),Color3.fromRGB(159,124,88),Color3.fromRGB(115,125,134),Color3.fromRGB(113,82,65),Color3.fromRGB(135,98,63)},
@@ -52,12 +56,12 @@ Config.AnimalColors = {
 }
 Config.Skins = {
     {name="Classique",required=0,color=Color3.fromRGB(204,222,235)},
-    {name="Bois",required=3,color=Color3.fromRGB(157,105,66)},
-    {name="Pierre",required=6,color=Color3.fromRGB(126,136,147)},
-    {name="Corail",required=10,color=Color3.fromRGB(255,132,151)},
-    {name="Océan",required=15,color=Color3.fromRGB(54,169,222)},
-    {name="Magma",required=22,color=Color3.fromRGB(239,91,46)},
-    {name="Galactique",required=30,color=Color3.fromRGB(124,76,235)},
+    {name="Bois",required=5,color=Color3.fromRGB(157,105,66)},
+    {name="Pierre",required=10,color=Color3.fromRGB(126,136,147)},
+    {name="Corail",required=17,color=Color3.fromRGB(255,132,151)},
+    {name="Océan",required=25,color=Color3.fromRGB(54,169,222)},
+    {name="Magma",required=35,color=Color3.fromRGB(239,91,46)},
+    {name="Galactique",required=48,color=Color3.fromRGB(124,76,235)},
 }
 Config.BaseCosts = {0,25000,1000000,100000000,10000000000,1000000000000,100000000000000}
 Config.BaseSlots = {6,8,10,12,14,16,20}
