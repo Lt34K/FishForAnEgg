@@ -195,6 +195,99 @@ local function createEggOrCreature(parent,entry,config,position)
             end
             ornament(holder,"Nose",Vector3.new(.35,.25,.22),head+Vector3.new(0,-.17,-.75),Color3.fromRGB(50,48,50),Enum.PartType.Ball)
         end
+        -- Recognizable silhouettes: every habitat gets distinctive species features.
+        local function detail(name,size,offset,tint,shape)
+            return ornament(holder,name,size,center+offset,tint or color,shape or Enum.PartType.Ball)
+        end
+        if entry.egg==1 then
+            if variant==1 then -- Rabbit: long ears and fluffy tail
+                for _,side in ipairs({-1,1}) do detail("LongRabbitEar",Vector3.new(.38,1.65,.4),Vector3.new(side*.48,2,.1)) end
+                detail("CottonTail",Vector3.new(.85,.85,.85),Vector3.new(0,-.4,1.35),Color3.fromRGB(250,244,230))
+            elseif variant==2 then -- Fox: muzzle, white chest and pointed tail
+                detail("WhiteChest",Vector3.new(1.4,1.3,.35),Vector3.new(0,-.45,-1),Color3.fromRGB(249,236,211))
+                detail("FoxTail",Vector3.new(.85,.85,2),Vector3.new(.7,-.25,1.5))
+                detail("TailTip",Vector3.new(.85,.8,.65),Vector3.new(.7,-.25,2.45),Color3.fromRGB(249,236,211))
+            elseif variant==3 then
+                detail("BushyTail",Vector3.new(1.1,1.45,1.2),Vector3.new(.8,.45,1.15))
+            elseif variant==4 then
+                for i=1,5 do detail("HedgehogSpine"..i,Vector3.new(.3,.95,.3),Vector3.new((i-3)*.48,1.25,.5),Color3.fromRGB(91,73,58)) end
+            elseif variant==5 or variant==7 then
+                for _,side in ipairs({-1,1}) do
+                    local antler=detail("Antler",Vector3.new(.22,1.6,.22),Vector3.new(side*.62,1.95,.1),Color3.fromRGB(234,207,139),Enum.PartType.Cylinder)
+                    antler.Orientation=Vector3.new(0,0,side*22)
+                end
+            elseif variant==8 then
+                detail("ForestCrown",Vector3.new(1.9,.4,1.7),Vector3.new(0,1.65,0),Color3.fromRGB(64,203,109))
+            end
+        elseif entry.egg==2 then
+            if variant==1 then
+                for _,side in ipairs({-1,1}) do detail("GoatHorn",Vector3.new(.32,.85,.3),Vector3.new(side*.48,1.55,-.7),Color3.fromRGB(232,221,183)) end
+            elseif variant==3 then
+                detail("WolfMuzzle",Vector3.new(.8,.5,.9),Vector3.new(0,.25,-1.75),Color3.fromRGB(207,211,212))
+            elseif variant==4 then
+                for _,side in ipairs({-1,1}) do detail("RoundBearEar",Vector3.new(.55,.55,.35),Vector3.new(side*.7,1.45,-.75)) end
+            elseif variant==5 or variant==7 then
+                for _,side in ipairs({-1,1}) do
+                    local wing=detail("WideWing",Vector3.new(1.85,.35,1.4),Vector3.new(side*1.85,.3,.25))
+                    wing.Orientation=Vector3.new(0,0,side*20)
+                end
+            elseif variant==8 then
+                for i=1,3 do detail("RockCrystal"..i,Vector3.new(.5,1.3,.55),Vector3.new((i-2)*.65,1.35,.3),Color3.fromRGB(130,164,180)) end
+            end
+        elseif entry.egg==3 then
+            if variant==1 then
+                for _,side in ipairs({-1,1}) do detail("FennecEar",Vector3.new(.85,1.55,.4),Vector3.new(side*.7,1.7,-.75)) end
+            elseif variant==3 then
+                for _,side in ipairs({-1,1}) do detail("Pincer",Vector3.new(.75,.35,.8),Vector3.new(side*1.65,-.4,-1.2)) end
+                local sting=detail("ScorpionStinger",Vector3.new(.3,1.6,.3),Vector3.new(0,1.1,1.2))
+                sting.Orientation=Vector3.new(30,0,0)
+            elseif variant==4 or variant==6 then
+                for i=1,2 do detail("CamelHump"..i,Vector3.new(1.2,1.25,1.1),Vector3.new(0,1.15,(i-1)*1.2-.6)) end
+            elseif variant==7 then
+                for _,side in ipairs({-1,1}) do detail("SphinxWing",Vector3.new(1.6,.3,1.1),Vector3.new(side*1.5,.6,.2)) end
+            elseif variant==8 then
+                detail("SandPhoenixCrest",Vector3.new(.65,1.5,.6),Vector3.new(0,1.75,-.8),Color3.fromRGB(255,207,82))
+            end
+        elseif entry.egg==4 then
+            if variant>=5 then
+                for i=1,4 do detail("Spine"..i,Vector3.new(.45,.8,.45),Vector3.new(0,1.05,(i-2.5)*.65),Color3.fromRGB(255,136,54)) end
+            end
+            if variant==7 then
+                for _,side in ipairs({-1,1}) do detail("PhoenixWing",Vector3.new(1.75,.35,1.4),Vector3.new(side*1.6,.6,.1),Color3.fromRGB(255,167,49)) end
+            elseif variant==8 then
+                for _,side in ipairs({-1,1}) do detail("DragonWing",Vector3.new(1.85,.35,1.8),Vector3.new(side*1.7,.6,.5),Color3.fromRGB(236,67,35)) end
+                for _,side in ipairs({-1,1}) do detail("DragonHorn",Vector3.new(.3,.9,.3),Vector3.new(side*.55,1.75,-.85),Color3.fromRGB(255,190,80)) end
+            end
+        elseif entry.egg==5 then
+            if variant==1 then
+                for _,side in ipairs({-1,1}) do detail("CrabClaw",Vector3.new(.9,.7,.75),Vector3.new(side*1.7,-.2,-1.2),Color3.fromRGB(242,124,91)) end
+            elseif variant==2 then
+                detail("TurtleShell",Vector3.new(2.6,1.1,2.2),Vector3.new(0,.6,.25),Color3.fromRGB(65,125,92))
+            elseif variant==4 then
+                detail("SharkDorsal",Vector3.new(.45,1.1,.8),Vector3.new(0,1.25,.1),Color3.fromRGB(75,112,145))
+            elseif variant==6 then
+                for _,side in ipairs({-1,1}) do detail("MantaWing",Vector3.new(2,.22,1.4),Vector3.new(side*1.9,.05,.1)) end
+            elseif variant==7 then
+                for i=1,6 do detail("KrakenTentacle"..i,Vector3.new(.3,1.9,.4),Vector3.new((i-3.5)*.55,-1.25,.7),Color3.fromRGB(111,75,171)) end
+            elseif variant==8 then
+                for i=1,4 do detail("LeviathanSpine"..i,Vector3.new(.4,.8,.5),Vector3.new(0,1.2,(i-2.5)*.75),Color3.fromRGB(77,225,230)) end
+            end
+        elseif entry.egg==6 then
+            if variant==1 then
+                detail("PenguinBelly",Vector3.new(1.5,1.65,.35),Vector3.new(0,-.1,-1.05),Color3.fromRGB(248,248,247))
+            elseif variant==2 or variant==4 then
+                for _,side in ipairs({-1,1}) do detail("SealFlipper",Vector3.new(1.3,.25,.65),Vector3.new(side*1.35,-.65,.1)) end
+            elseif variant==5 then
+                detail("PolarBearMuzzle",Vector3.new(.95,.6,.65),Vector3.new(0,.3,-1.55),Color3.fromRGB(248,250,250))
+            elseif variant==6 then
+                for _,side in ipairs({-1,1}) do detail("SnowOwlWing",Vector3.new(1.5,.4,1.2),Vector3.new(side*1.55,.45,.1),Color3.fromRGB(245,246,247)) end
+            elseif variant==7 then
+                detail("YetiChest",Vector3.new(1.7,1.5,.4),Vector3.new(0,-.3,-1.1),Color3.fromRGB(237,247,251))
+            elseif variant==8 then
+                for _,side in ipairs({-1,1}) do detail("IceDragonWing",Vector3.new(1.8,.35,1.6),Vector3.new(side*1.7,.55,.4),Color3.fromRGB(121,235,255)) end
+                for i=1,3 do detail("IceCrystal"..i,Vector3.new(.4,1,.4),Vector3.new(0,1.25,(i-2)*.65),Color3.fromRGB(180,251,255)) end
+            end
+        end
         if entry.egg==3 and variant==3 then
             for _,side in ipairs({-1,1}) do
                 ornament(holder,"Claw",Vector3.new(.8,.25,.65),center+Vector3.new(side*1.5,-.7,-.7),color)
