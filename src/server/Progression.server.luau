@@ -115,6 +115,57 @@ end
 local function clearDecor(d)
     if d.decor then d.decor:Destroy() d.decor=nil end
 end
+local function ornament(parent,name,size,position,color,shape,material)
+    local p=Instance.new("Part")
+    p.Name=name
+    p.Size=size
+    p.Position=position
+    p.Anchored=true
+    p.CanCollide=false
+    p.Color=color
+    p.Material=material or Enum.Material.SmoothPlastic
+    if shape then p.Shape=shape end
+    p.Parent=parent
+    return p
+end
+
+local function createEggOrCreature(parent,entry,config,position)
+    local holder=Instance.new("Model")
+    holder.Name=(entry.hatched and "Creature_" or "Egg_")..config.name
+    holder.Parent=parent
+    local center=position+Vector3.new(0,2.25,0)
+    local body=ornament(holder,"Body",entry.hatched and Vector3.new(3,2.5,2.5) or Vector3.new(2.3,3,2.3),center,config.color,Enum.PartType.Ball,Enum.Material.SmoothPlastic)
+    if entry.hatched then
+        local eyeColor=Color3.fromRGB(24,31,48)
+        for _,side in ipairs({-1,1}) do
+            ornament(holder,"Eye",Vector3.new(.4,.48,.28),center+Vector3.new(side*.62,.35,-1.05),Color3.new(1,1,1),Enum.PartType.Ball)
+            ornament(holder,"Pupil",Vector3.new(.19,.25,.15),center+Vector3.new(side*.62,.35,-1.25),eyeColor,Enum.PartType.Ball)
+            ornament(holder,"Foot",Vector3.new(.8,.5,.85),center+Vector3.new(side*.75,-1.25,-.45),config.color,Enum.PartType.Ball)
+            ornament(holder,"Ear",Vector3.new(.75,1.3,.65),center+Vector3.new(side*.8,1.55,0),config.color,Enum.PartType.Ball)
+        end
+        ornament(holder,"Nose",Vector3.new(.35,.25,.22),center+Vector3.new(0,-.15,-1.3),Color3.fromRGB(250,153,177),Enum.PartType.Ball)
+    else
+        for _,offset in ipairs({Vector3.new(.8,.5,-.8),Vector3.new(-.7,-.35,-.85),Vector3.new(0,.95,-.8)}) do
+            ornament(holder,"EggPattern",Vector3.new(.45,.55,.16),center+offset,Color3.fromRGB(255,255,255),Enum.PartType.Ball,Enum.Material.Neon)
+        end
+    end
+    local board=Instance.new("BillboardGui")
+    board.Size=UDim2.fromOffset(170,48)
+    board.StudsOffset=Vector3.new(0,2.6,0)
+    board.AlwaysOnTop=true
+    board.Adornee=body
+    board.Parent=holder
+    local label=Instance.new("TextLabel")
+    label.Size=UDim2.fromScale(1,1)
+    label.BackgroundTransparency=1
+    label.TextColor3=Color3.new(1,1,1)
+    label.TextStrokeTransparency=.15
+    label.TextScaled=true
+    label.Font=Enum.Font.GothamBold
+    label.Text=config.name..(entry.hatched and ("\\n+"..fmt(config.income).." $/s") or "\\nEn incubation")
+    label.Parent=board
+end
+
 local renderBase
 renderBase = function(player)
     local d=data[player]
@@ -182,30 +233,7 @@ renderBase = function(player)
         local entry=d.slots[i]
         if entry then
             local egg=Config.Eggs[entry.egg]
-            local model=Instance.new("Part")
-            model.Name=entry.hatched and "Créature_"..egg.name or egg.name
-            model.Shape=entry.hatched and Enum.PartType.Ball or Enum.PartType.Ball
-            model.Size=entry.hatched and Vector3.new(3.4,3.4,3.4) or Vector3.new(2.5,3.1,2.5)
-            model.Position=pos+Vector3.new(0,2.5,0)
-            model.Anchored=true
-            model.CanCollide=false
-            model.Material=Enum.Material.Neon
-            model.Color=egg.color
-            model.Parent=folder
-            local board=Instance.new("BillboardGui")
-            board.Size=UDim2.fromOffset(160,46)
-            board.StudsOffset=Vector3.new(0,2.5,0)
-            board.AlwaysOnTop=true
-            board.Parent=model
-            local text=Instance.new("TextLabel")
-            text.Size=UDim2.fromScale(1,1)
-            text.BackgroundTransparency=1
-            text.TextColor3=Color3.new(1,1,1)
-            text.TextStrokeTransparency=.2
-            text.TextScaled=true
-            text.Font=Enum.Font.GothamBold
-            text.Text=egg.name..(entry.hatched and ("\n+"..fmt(egg.income).." $/s") or "\nÉclosion en cours")
-            text.Parent=board
+            createEggOrCreature(folder,entry,egg,pos)
         end
     end
 end
