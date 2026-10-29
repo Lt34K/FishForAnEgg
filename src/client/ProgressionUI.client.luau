@@ -68,18 +68,18 @@ local buyBase=makeButton(shop,"BuyBase",UDim2.new(.04,0,.78,0),UDim2.new(.92,0,0
 local notice=makeLabel(gui,"Notice",UDim2.new(.5,-170,0,12),UDim2.fromOffset(340,48),"")
 notice.Visible=false
 
-local indexToggle=makeButton(gui,"IndexToggle",UDim2.new(1,-176,0,352),UDim2.fromOffset(164,46),"📖 INDEX")
+local indexToggle=makeButton(gui,"IndexToggle",UDim2.new(1,-176,0,68),UDim2.fromOffset(164,46),"📖 INDEX")
 local indexPanel=Instance.new("ScrollingFrame")
 indexPanel.Name="CreatureIndex"
 indexPanel.AnchorPoint=Vector2.new(1,0)
-indexPanel.Position=UDim2.new(1,-12,0,405)
-indexPanel.Size=UDim2.new(.85,0,0,310)
+indexPanel.Position=UDim2.new(1,-12,0,122)
+indexPanel.Size=UDim2.new(.85,0,.65,0)
 indexPanel.BackgroundColor3=Color3.fromRGB(23,47,65)
 indexPanel.ScrollBarThickness=5
 indexPanel.Visible=false
 indexPanel.Parent=gui
 local limit=Instance.new("UISizeConstraint")
-limit.MaxSize=Vector2.new(360,310)
+limit.MaxSize=Vector2.new(400,480)
 limit.Parent=indexPanel
 Instance.new("UICorner",indexPanel).CornerRadius=UDim.new(0,12)
 local layout=Instance.new("UIListLayout")
@@ -101,9 +101,13 @@ local function drawIndex(d)
     local header=makeLabel(indexPanel,"Header",UDim2.new(),UDim2.new(1,-12,0,42),"📖 INDEX : "..found.."/"..(d.totalCreatures or 48))
     header.LayoutOrder=0
     for eggId,names in ipairs(d.creatures or {}) do
+        local discovered=0
+        for variant=1,#names do
+            if d.index and d.index[tostring((eggId-1)*8+variant)] then discovered+=1 end
+        end
         local habitat=(d.habitats or {})[eggId]
         local unlocked=habitat and d.rod>=habitat.minRod
-        local section=makeLabel(indexPanel,"Habitat"..eggId,UDim2.new(),UDim2.new(1,-12,0,38),(unlocked and "🌿 " or "🔒 ")..(habitat and habitat.name or "Habitat")..(unlocked and "" or (" | Canne "..tostring(habitat and habitat.minRod or "?"))))
+        local section=makeLabel(indexPanel,"Habitat"..eggId,UDim2.new(),UDim2.new(1,-12,0,38),(unlocked and "🌿 " or "🔒 ")..(habitat and habitat.name or "Habitat").." ("..discovered.."/8)"..(unlocked and "" or (" | Canne "..tostring(habitat and habitat.minRod or "?"))))
         section.LayoutOrder=eggId*10-9
         for variant,name in ipairs(names) do
             local id=(eggId-1)*8+variant
@@ -111,9 +115,19 @@ local function drawIndex(d)
             local rarity=(d.rarities or {})[variant] or ""
             local label=makeLabel(indexPanel,"Creature"..id,UDim2.new(),UDim2.new(1,-12,0,31),(seen and "✓ " or "🔒 ")..(seen and name or "???").." · "..rarity)
             label.LayoutOrder=eggId*10-9+variant
-            if not seen then label.TextColor3=Color3.fromRGB(157,168,180) end
+            if not seen then
+                label.TextColor3=Color3.fromRGB(157,168,180)
+            elseif variant==8 then
+                label.BackgroundColor3=Color3.fromRGB(133,86,195)
+            elseif variant==7 then
+                label.BackgroundColor3=Color3.fromRGB(196,137,43)
+            elseif variant==6 then
+                label.BackgroundColor3=Color3.fromRGB(80,114,198)
+            end
         end
     end
+    local skinsHeader=makeLabel(indexPanel,"SkinsHeader",UDim2.new(),UDim2.new(1,-12,0,38),"🎨 SKINS DE BASE")
+    skinsHeader.LayoutOrder=99
     for id,skin in ipairs(d.skins or {}) do
         local unlocked=found>=skin.required
         local selected=d.skin==id
@@ -129,7 +143,10 @@ end
 
 local state
 local noticeId=0
-toggle.Activated:Connect(function() shop.Visible=not shop.Visible end)
+toggle.Activated:Connect(function()
+    shop.Visible=not shop.Visible
+    if shop.Visible then indexPanel.Visible=false end
+end)
 buyRod.Activated:Connect(function() action:FireServer("BuyRod") end)
 buyBase.Activated:Connect(function() action:FireServer("UpgradeBase") end)
 events.OnClientEvent:Connect(function(kind,payload)
