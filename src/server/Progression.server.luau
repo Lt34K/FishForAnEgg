@@ -143,6 +143,24 @@ local function createEggOrCreature(parent,entry,config,position)
     local longBody=(entry.egg==3 and variant==4) or (entry.egg==5 and variant>=3)
     local body=ornament(holder,"Body",entry.hatched and (longBody and Vector3.new(3.7,1.65,2.2) or Vector3.new(2.8,2.25,2.15)) or Vector3.new(2.3,3,2.3),center,color,Enum.PartType.Ball,Enum.Material.SmoothPlastic)
     if entry.hatched then
+        if variant>=7 then
+            body.Material=Enum.Material.Neon
+            local light=Instance.new("PointLight")
+            light.Color=color
+            light.Brightness=variant==8 and 2.5 or 1.3
+            light.Range=variant==8 and 15 or 10
+            light.Parent=body
+            local sparkle=Instance.new("ParticleEmitter")
+            sparkle.Name="RarityAura"
+            sparkle.Rate=variant==8 and 12 or 5
+            sparkle.Lifetime=NumberRange.new(.7,1.3)
+            sparkle.Speed=NumberRange.new(.4,1.3)
+            sparkle.SpreadAngle=Vector2.new(180,180)
+            sparkle.Color=ColorSequence.new(color,Color3.new(1,1,1))
+            sparkle.LightEmission=.7
+            sparkle.Size=NumberSequence.new(.22)
+            sparkle.Parent=body
+        end
         local head=center+Vector3.new(0,.55,-.95)
         ornament(holder,"Head",Vector3.new(1.6,1.45,1.35),head,color,Enum.PartType.Ball)
         for _,side in ipairs({-1,1}) do
@@ -200,7 +218,7 @@ local function createEggOrCreature(parent,entry,config,position)
     label.TextStrokeTransparency=.15
     label.TextScaled=true
     label.Font=Enum.Font.GothamBold
-    label.Text=(entry.hatched and creatureName or config.name)..(entry.hatched and ("\\n+"..fmt(config.income).." $/s") or "\\nEn incubation")
+    label.Text=(entry.hatched and ((Config.CreatureRarities[variant] or "").." | "..creatureName) or config.name)..(entry.hatched and ("\\n+"..fmt(config.income).." $/s") or "\\nEn incubation")
     label.Parent=board
 end
 
@@ -416,7 +434,8 @@ Players.PlayerAdded:Connect(function(player)
     end
     if type(saved.slots)=="table" then
         for i,e in pairs(saved.slots) do
-            if type(i)=="number" and i>=1 and i<=Config.BaseSlots[d.base] and type(e)=="table" and Config.Eggs[e.egg] then
+            i=tonumber(i)
+            if i and i>=1 and i<=Config.BaseSlots[d.base] and type(e)=="table" and Config.Eggs[e.egg] then
                 d.slots[i]={egg=e.egg,hatched=e.hatched==true,readyAt=tonumber(e.readyAt) or os.time(),creature=math.clamp(math.floor(tonumber(e.creature) or 1),1,Config.CreaturesPerHabitat)}
             end
         end
