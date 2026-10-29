@@ -25,13 +25,13 @@ local ocean = part("Ocean", Vector3.new(850, 2, 850), CFrame.new(0, -5, 0), Colo
 ocean.Transparency = 0.22
 ocean.CanCollide = false
 
-local island = part("MainIsland", Vector3.new(170, 10, 140), CFrame.new(0, 0, 0), Color3.fromRGB(91, 191, 93), Enum.Material.Grass)
-part("Beach", Vector3.new(180, 2, 150), CFrame.new(0, -5.7, 0), Color3.fromRGB(239, 213, 145), Enum.Material.Sand)
+local island = part("MainIsland", Vector3.new(240, 10, 140), CFrame.new(0, 0, 0), Color3.fromRGB(91, 191, 93), Enum.Material.Grass)
+part("Beach", Vector3.new(250, 2, 150), CFrame.new(0, -5.7, 0), Color3.fromRGB(239, 213, 145), Enum.Material.Sand)
 
 local spawn = Instance.new("SpawnLocation")
 spawn.Name = "FishSpawn"
 spawn.Size = Vector3.new(12, 1, 12)
-spawn.CFrame = CFrame.new(0, 5.6, 38)
+spawn.CFrame = CFrame.new(0, 5.6, -39)
 spawn.Anchored = true
 spawn.Neutral = true
 spawn.Material = Enum.Material.Neon
@@ -49,14 +49,19 @@ end
 local bases = Instance.new("Folder")
 bases.Name = "BasePlots"
 bases.Parent = world
-for i = 1, 6 do
-    local col = (i - 1) % 3
-    local row = math.floor((i - 1) / 3)
-    local x = -54 + col * 54
-    local z = 6 + row * 42
-    local pad = part("Base"..i, Vector3.new(42, 1, 33), CFrame.new(x, 5.5, z), Color3.fromRGB(204, 222, 235), Enum.Material.SmoothPlastic, bases)
+-- Four bases at the back, two at the front on either side of the central path.
+local positions = {
+    Vector3.new(-81, 5.5, 37),
+    Vector3.new(-27, 5.5, 37),
+    Vector3.new(27, 5.5, 37),
+    Vector3.new(81, 5.5, 37),
+    Vector3.new(-70, 5.5, -16),
+    Vector3.new(70, 5.5, -16),
+}
+for i, position in ipairs(positions) do
+    local pad = part("Base"..i, Vector3.new(42, 1, 33), CFrame.new(position), Color3.fromRGB(204, 222, 235), Enum.Material.SmoothPlastic, bases)
     pad:SetAttribute("BaseIndex", i)
-    part("BaseBorder"..i, Vector3.new(44, 0.4, 35), CFrame.new(x, 5.05, z), Color3.fromRGB(49, 107, 150), Enum.Material.SmoothPlastic, bases)
+    part("BaseBorder"..i, Vector3.new(44, 0.4, 35), CFrame.new(position - Vector3.new(0, 0.45, 0)), Color3.fromRGB(49, 107, 150), Enum.Material.SmoothPlastic, bases)
 end
 
 -- Remove the template baseplate only when its default name matches.
