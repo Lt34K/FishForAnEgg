@@ -94,3 +94,13 @@ events.OnClientEvent:Connect(function(kind,payload)
     end
 end)
 action:FireServer("Sync")
+
+task.spawn(function()
+    local stats=player:WaitForChild("leaderstats")
+    local cashValue=stats:WaitForChild("Cash")
+    local function refresh()
+        cash.Text="💰 "..fmt(cashValue.Value).." $"
+    end
+    cashValue:GetPropertyChangedSignal("Value"):Connect(refresh)
+    refresh()
+end)
