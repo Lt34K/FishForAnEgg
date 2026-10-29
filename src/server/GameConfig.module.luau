@@ -25,6 +25,23 @@ Config.Eggs = {
     {name="Œuf Légendaire",weight=9,income=25000,hatch=90,color=Color3.fromRGB(250,191,58)},
     {name="Œuf Secret",weight=1,income=500000,hatch=120,color=Color3.fromRGB(251,75,173)},
 }
+Config.Creatures = {
+    {"Goutte", "Bulle", "Crabillon", "Méduse", "Hippocampe"},
+    {"Corallin", "Étoiline", "Pinçotte", "Anémone", "Récifou"},
+    {"Perlino", "Nacrine", "Sirénette", "Coquillou", "Luminelle"},
+    {"Ombrelle", "Abyssou", "Anguillune", "Nocturne", "Krakenou"},
+    {"Solarius", "Drakœuf", "Phénixor", "Léviathan", "Aurélion"},
+    {"Cosmique", "Nébula", "Voidling", "Éternelle", "Oméga"},
+}
+Config.Skins = {
+    {name="Classique",required=0,color=Color3.fromRGB(204,222,235)},
+    {name="Bois",required=3,color=Color3.fromRGB(157,105,66)},
+    {name="Pierre",required=6,color=Color3.fromRGB(126,136,147)},
+    {name="Corail",required=10,color=Color3.fromRGB(255,132,151)},
+    {name="Océan",required=15,color=Color3.fromRGB(54,169,222)},
+    {name="Magma",required=22,color=Color3.fromRGB(239,91,46)},
+    {name="Galactique",required=30,color=Color3.fromRGB(124,76,235)},
+}
 Config.BaseCosts = {0,25000,1000000,100000000,10000000000,1000000000000,100000000000000}
 Config.BaseSlots = {6,8,10,12,14,16,20}
 return Config
