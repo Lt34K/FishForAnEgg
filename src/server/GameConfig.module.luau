@@ -18,12 +18,12 @@ Config.Rods = {
 }
 
 Config.Eggs = {
-    {name="Œuf Marin",weight=620,income=5,hatch=10,color=Color3.fromRGB(100,194,246)},
-    {name="Œuf Corail",weight=245,income=30,hatch=20,color=Color3.fromRGB(255,135,146)},
-    {name="Œuf Perle",weight=95,income=250,hatch=35,color=Color3.fromRGB(239,240,252)},
-    {name="Œuf Abyssal",weight=30,income=2500,hatch=60,color=Color3.fromRGB(99,81,205)},
-    {name="Œuf Légendaire",weight=9,income=25000,hatch=90,color=Color3.fromRGB(250,191,58)},
-    {name="Œuf Secret",weight=1,income=500000,hatch=120,color=Color3.fromRGB(251,75,173)},
+    {name="Œuf Forêt",weight=620,income=5,hatch=10,color=Color3.fromRGB(100,194,246)},
+    {name="Œuf Montagne",weight=245,income=30,hatch=20,color=Color3.fromRGB(255,135,146)},
+    {name="Œuf Désert",weight=95,income=250,hatch=35,color=Color3.fromRGB(239,240,252)},
+    {name="Œuf Volcan",weight=30,income=2500,hatch=60,color=Color3.fromRGB(99,81,205)},
+    {name="Œuf Océan",weight=9,income=25000,hatch=90,color=Color3.fromRGB(250,191,58)},
+    {name="Œuf Banquise",weight=1,income=500000,hatch=120,color=Color3.fromRGB(251,75,173)},
 }
 -- Six themed habitats; each contains five recognizable animals.
 Config.Habitats = {
