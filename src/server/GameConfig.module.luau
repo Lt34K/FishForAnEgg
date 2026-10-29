@@ -25,13 +25,30 @@ Config.Eggs = {
     {name="Œuf Légendaire",weight=9,income=25000,hatch=90,color=Color3.fromRGB(250,191,58)},
     {name="Œuf Secret",weight=1,income=500000,hatch=120,color=Color3.fromRGB(251,75,173)},
 }
+-- Six themed habitats; each contains five recognizable animals.
+Config.Habitats = {
+    {name="Forêt",minRod=1},
+    {name="Montagne et pierre",minRod=3},
+    {name="Désert",minRod=5},
+    {name="Volcan",minRod=7},
+    {name="Océan",minRod=9},
+    {name="Banquise",minRod=11},
+}
 Config.Creatures = {
-    {"Goutte", "Bulle", "Crabillon", "Méduse", "Hippocampe"},
-    {"Corallin", "Étoiline", "Pinçotte", "Anémone", "Récifou"},
-    {"Perlino", "Nacrine", "Sirénette", "Coquillou", "Luminelle"},
-    {"Ombrelle", "Abyssou", "Anguillune", "Nocturne", "Krakenou"},
-    {"Solarius", "Drakœuf", "Phénixor", "Léviathan", "Aurélion"},
-    {"Cosmique", "Nébula", "Voidling", "Éternelle", "Oméga"},
+    {"Lapin", "Renard", "Écureuil", "Hérisson", "Cerf"},
+    {"Chèvre", "Marmotte", "Loup", "Ours", "Aigle"},
+    {"Fennec", "Suricate", "Scorpion", "Chameau", "Cobra"},
+    {"Salamandre", "Lézard", "Iguane", "Varan", "Dragon de Komodo"},
+    {"Crabe", "Tortue marine", "Dauphin", "Requin", "Baleine"},
+    {"Manchot", "Phoque", "Renard polaire", "Morse", "Ours polaire"},
+}
+Config.AnimalColors = {
+    {Color3.fromRGB(228,214,193),Color3.fromRGB(220,104,54),Color3.fromRGB(170,99,49),Color3.fromRGB(139,126,112),Color3.fromRGB(167,117,73)},
+    {Color3.fromRGB(211,206,189),Color3.fromRGB(159,124,88),Color3.fromRGB(115,125,134),Color3.fromRGB(113,82,65),Color3.fromRGB(135,98,63)},
+    {Color3.fromRGB(236,198,127),Color3.fromRGB(195,150,92),Color3.fromRGB(114,83,66),Color3.fromRGB(196,151,101),Color3.fromRGB(179,144,92)},
+    {Color3.fromRGB(245,116,54),Color3.fromRGB(113,166,88),Color3.fromRGB(71,145,99),Color3.fromRGB(103,96,75),Color3.fromRGB(100,86,69)},
+    {Color3.fromRGB(229,97,85),Color3.fromRGB(91,168,128),Color3.fromRGB(100,177,205),Color3.fromRGB(81,126,162),Color3.fromRGB(88,125,157)},
+    {Color3.fromRGB(45,55,68),Color3.fromRGB(179,197,208),Color3.fromRGB(236,239,243),Color3.fromRGB(133,145,155),Color3.fromRGB(242,244,247)},
 }
 Config.Skins = {
     {name="Classique",required=0,color=Color3.fromRGB(204,222,235)},
