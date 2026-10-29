@@ -278,8 +278,13 @@ Players.PlayerAdded:Connect(function(player)
     local ok,saved=pcall(function() return store:GetAsync("P_"..player.UserId) end)
     if not ok then
         warn("Fish for an Egg: chargement impossible: "..tostring(saved))
-        player:Kick("Sauvegarde indisponible. Réessaie dans quelques instants.")
-        return
+        if RunService:IsStudio() then
+            warn("Mode test Studio : progression temporaire sans sauvegarde.")
+            saved = {}
+        else
+            player:Kick("Sauvegarde indisponible. Réessaie dans quelques instants.")
+            return
+        end
     end
     saved=type(saved)=="table" and saved or {}
     local plot
@@ -290,7 +295,7 @@ Players.PlayerAdded:Connect(function(player)
         cash=math.max(0,tonumber(saved.cash) or 0),
         rod=math.clamp(math.floor(tonumber(saved.rod) or 1),1,#Config.Rods),
         base=math.clamp(math.floor(tonumber(saved.base) or 1),1,#Config.BaseSlots),
-        plot=plot,inventory={},slots={},loaded=true
+        plot=plot,inventory={},slots={},loaded=ok
     }
     if type(saved.inventory)=="table" then
         for _,v in ipairs(saved.inventory) do
