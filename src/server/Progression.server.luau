@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local RunService = game:GetService("RunService")
-local Config = require(script.Parent:WaitForChild("GameConfig.module"))
+local Config = require(script.Parent:WaitForChild("GameConfig"))
 local store = DataStoreService:GetDataStore(RunService:IsStudio() and "FishEgg_Studio_Prototype_V1" or "FishEgg_Live_V1")
 
 local caught = Instance.new("BindableEvent")
@@ -37,7 +37,7 @@ local function snapshot(player)
     for i,entry in pairs(d.slots) do
         if entry then slots[i] = {egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt,creature=entry.creature} end
     end
-    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures})
+    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,habitats=Config.Habitats})
 end
 local function updateCash(player)
     local d=data[player]
@@ -135,16 +135,53 @@ local function createEggOrCreature(parent,entry,config,position)
     holder.Parent=parent
     local center=position+Vector3.new(0,2.25,0)
     local creatureName=Config.Creatures[entry.egg] and Config.Creatures[entry.egg][entry.creature or 1] or config.name
-    local body=ornament(holder,"Body",entry.hatched and Vector3.new(3,2.5,2.5) or Vector3.new(2.3,3,2.3),center,config.color,Enum.PartType.Ball,Enum.Material.SmoothPlastic)
+    local variant=entry.creature or 1
+    local color=(Config.AnimalColors[entry.egg] or {})[variant] or config.color
+    local isOcean=entry.egg==5
+    local isBird=(entry.egg==2 and variant==5) or (entry.egg==6 and variant==1)
+    local isReptile=(entry.egg==4 or (entry.egg==3 and (variant==3 or variant==5)))
+    local longBody=(entry.egg==3 and variant==4) or (entry.egg==5 and variant>=3)
+    local body=ornament(holder,"Body",entry.hatched and (longBody and Vector3.new(3.7,1.65,2.2) or Vector3.new(2.8,2.25,2.15)) or Vector3.new(2.3,3,2.3),center,color,Enum.PartType.Ball,Enum.Material.SmoothPlastic)
     if entry.hatched then
-        local eyeColor=Color3.fromRGB(24,31,48)
+        local head=center+Vector3.new(0,.55,-.95)
+        ornament(holder,"Head",Vector3.new(1.6,1.45,1.35),head,color,Enum.PartType.Ball)
         for _,side in ipairs({-1,1}) do
-            ornament(holder,"Eye",Vector3.new(.4,.48,.28),center+Vector3.new(side*.62,.35,-1.05),Color3.new(1,1,1),Enum.PartType.Ball)
-            ornament(holder,"Pupil",Vector3.new(.19,.25,.15),center+Vector3.new(side*.62,.35,-1.25),eyeColor,Enum.PartType.Ball)
-            ornament(holder,"Foot",Vector3.new(.8,.5,.85),center+Vector3.new(side*.75,-1.25,-.45),config.color,Enum.PartType.Ball)
-            ornament(holder,"Ear",Vector3.new(.75,1.3,.65),center+Vector3.new(side*.8,1.55,0),config.color,Enum.PartType.Ball)
+            local eye=head+Vector3.new(side*.43,.23,-.61)
+            ornament(holder,"Eye",Vector3.new(.32,.37,.22),eye,Color3.new(1,1,1),Enum.PartType.Ball)
+            ornament(holder,"Pupil",Vector3.new(.16,.2,.12),eye+Vector3.new(0,0,-.13),Color3.fromRGB(22,28,39),Enum.PartType.Ball)
+            if isOcean then
+                local fin=ornament(holder,"Flipper",Vector3.new(1.2,.24,.65),center+Vector3.new(side*1.45,-.35,.2),color)
+                fin.Orientation=Vector3.new(0,0,side*18)
+            elseif isBird then
+                ornament(holder,"Wing",Vector3.new(.55,1.3,.95),center+Vector3.new(side*1.25,0,.1),color,Enum.PartType.Ball)
+            else
+                ornament(holder,"Leg",Vector3.new(.65,.85,.8),center+Vector3.new(side*.85,-1.05,-.35),color,Enum.PartType.Ball)
+            end
         end
-        ornament(holder,"Nose",Vector3.new(.35,.25,.22),center+Vector3.new(0,-.15,-1.3),Color3.fromRGB(250,153,177),Enum.PartType.Ball)
+        if isReptile then
+            local tail=ornament(holder,"Tail",Vector3.new(.65,.7,2.2),center+Vector3.new(0,-.45,1.6),color)
+            tail.Orientation=Vector3.new(-15,0,0)
+        elseif isOcean then
+            ornament(holder,"TailFin",Vector3.new(1.55,.35,.8),center+Vector3.new(0,0,1.7),color)
+            if variant>=3 then
+                ornament(holder,"DorsalFin",Vector3.new(.35,.9,.7),center+Vector3.new(0,1.1,.25),color)
+            end
+        elseif isBird then
+            ornament(holder,"Beak",Vector3.new(.48,.3,.65),head+Vector3.new(0,-.15,-.8),Color3.fromRGB(245,171,61))
+        else
+            local ears=(entry.egg==1 and (variant==1 or variant==2 or variant==5)) or (entry.egg==3 and variant==1) or (entry.egg==6 and (variant==3 or variant==5))
+            if ears then
+                for _,side in ipairs({-1,1}) do
+                    ornament(holder,"Ear",Vector3.new(.48,.95,.42),head+Vector3.new(side*.55,.88,.15),color,Enum.PartType.Ball)
+                end
+            end
+            ornament(holder,"Nose",Vector3.new(.35,.25,.22),head+Vector3.new(0,-.17,-.75),Color3.fromRGB(50,48,50),Enum.PartType.Ball)
+        end
+        if entry.egg==3 and variant==3 then
+            for _,side in ipairs({-1,1}) do
+                ornament(holder,"Claw",Vector3.new(.8,.25,.65),center+Vector3.new(side*1.5,-.7,-.7),color)
+            end
+        end
     else
         for _,offset in ipairs({Vector3.new(.8,.5,-.8),Vector3.new(-.7,-.35,-.85),Vector3.new(0,.95,-.8)}) do
             ornament(holder,"EggPattern",Vector3.new(.45,.55,.16),center+offset,Color3.fromRGB(255,255,255),Enum.PartType.Ball,Enum.Material.Neon)
@@ -270,7 +307,10 @@ caught.Event:Connect(function(player,rodLevel)
         notify(player,"Inventaire plein (30 œufs). Place tes œufs dans ta base.")
         return
     end
-    local maxEgg=math.min(#Config.Eggs,2+math.floor((rodLevel-1)/2))
+    local maxEgg=1
+    for i,habitat in ipairs(Config.Habitats) do
+        if rodLevel>=habitat.minRod then maxEgg=i end
+    end
     local total=0
     for i=1,maxEgg do total+=Config.Eggs[i].weight end
     local choice=math.random(1,total)
@@ -280,7 +320,7 @@ caught.Event:Connect(function(player,rodLevel)
         if choice<=0 then picked=i break end
     end
     table.insert(d.inventory,picked)
-    notify(player,"🥚 "..Config.Eggs[picked].name.." pêché ! Va le placer dans ta base.")
+    notify(player,"🥚 "..Config.Eggs[picked].name.." ("..Config.Habitats[picked].name..") pêché !")
     snapshot(player)
 end)
 
