@@ -37,7 +37,7 @@ local function snapshot(player)
     for i,entry in pairs(d.slots) do
         if entry then slots[i] = {egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt,creature=entry.creature} end
     end
-    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,habitats=Config.Habitats})
+    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats})
 end
 local function updateCash(player)
     local d=data[player]
@@ -270,7 +270,14 @@ renderBase = function(player)
                 notify(player,cfg.name..(e.hatched and (" | +"..fmt(cfg.income).." $/s") or " | incubation"))
             elseif #current.inventory>0 then
                 local eggIndex=table.remove(current.inventory,1)
-                current.slots[i]={egg=eggIndex,hatched=false,readyAt=os.time()+Config.Eggs[eggIndex].hatch,creature=math.random(1,5)}
+                current.slots[i]={egg=eggIndex,hatched=false,readyAt=os.time()+Config.Eggs[eggIndex].hatch,creature=(function()
+                    local roll=math.random(1,100)
+                    for rarity,weight in ipairs(Config.CreatureWeights) do
+                        roll-=weight
+                        if roll<=0 then return rarity end
+                    end
+                    return 1
+                end)()}
                 renderBase(player)
                 snapshot(player)
             else
@@ -292,7 +299,7 @@ local function save(player)
     busySave[player]=true
     local slots={}
     for i,e in pairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt,creature=e.creature} end end
-    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,skin=d.skin}
+    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin}
     local ok,err=pcall(function()
         store:UpdateAsync("P_"..player.UserId,function() return payload end)
     end)
@@ -389,7 +396,15 @@ Players.PlayerAdded:Connect(function(player)
     if type(saved.index)=="table" then
         for key,value in pairs(saved.index) do
             local id=tonumber(key)
-            if id and id>=1 and id<=30 and value==true then d.index[tostring(id)]=true end
+            if id and value==true then
+                local mapped=id
+                if saved.indexVersion~=2 then
+                    local oldHabitat=math.floor((id-1)/5)
+                    local oldVariant=(id-1)%5+1
+                    mapped=oldHabitat*Config.CreaturesPerHabitat+oldVariant
+                end
+                if mapped>=1 and mapped<=Config.TotalCreatures then d.index[tostring(mapped)]=true end
+            end
         end
     end
     local savedSkin=math.floor(tonumber(saved.skin) or 1)
@@ -402,7 +417,7 @@ Players.PlayerAdded:Connect(function(player)
     if type(saved.slots)=="table" then
         for i,e in pairs(saved.slots) do
             if type(i)=="number" and i>=1 and i<=Config.BaseSlots[d.base] and type(e)=="table" and Config.Eggs[e.egg] then
-                d.slots[i]={egg=e.egg,hatched=e.hatched==true,readyAt=tonumber(e.readyAt) or os.time(),creature=math.clamp(math.floor(tonumber(e.creature) or 1),1,5)}
+                d.slots[i]={egg=e.egg,hatched=e.hatched==true,readyAt=tonumber(e.readyAt) or os.time(),creature=math.clamp(math.floor(tonumber(e.creature) or 1),1,Config.CreaturesPerHabitat)}
             end
         end
     end
@@ -449,13 +464,13 @@ task.spawn(function()
                     if not entry.hatched and os.time()>=entry.readyAt then
                         entry.hatched=true
                         changed=true
-                        local creatureId=(entry.egg-1)*5+(entry.creature or 1)
+                        local creatureId=(entry.egg-1)*Config.CreaturesPerHabitat+(entry.creature or 1)
                         local key=tostring(creatureId)
                         if not d.index[key] then
                             local before=countIndex(d.index)
                             d.index[key]=true
                             local after=before+1
-                            notify(player,"📖 Nouvelle créature ! Index : "..after.."/30")
+                            notify(player,"📖 Nouvelle créature ! Index : "..after.."/"..Config.TotalCreatures)
                             for _,skin in ipairs(Config.Skins) do
                                 if skin.required==after and after>0 then notify(player,"🎨 Skin "..skin.name.." débloqué !") end
                             end
