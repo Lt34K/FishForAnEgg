@@ -6,10 +6,15 @@ local remote = ReplicatedStorage:FindFirstChild("FishingEvent") or Instance.new(
 remote.Name = "FishingEvent"
 remote.Parent = ReplicatedStorage
 local sessions = {}
+local eggCaught = script.Parent:WaitForChild("EggCaught")
 
 local function getRod(player)
     local character = player.Character
-    return character and character:FindFirstChild("Canne en bois")
+    if not character then return nil end
+    for _,child in ipairs(character:GetChildren()) do
+        if child:IsA("Tool") and child:GetAttribute("RodLevel") then return child end
+    end
+    return nil
 end
 
 local function nearPier(player)
@@ -29,7 +34,7 @@ remote.OnServerEvent:Connect(function(player, action)
     if action == "Cast" then
         if sessions[player] then return end
         if not getRod(player) then
-            remote:FireClient(player, "Message", "Équipe ta canne en bois !")
+            remote:FireClient(player, "Message", "Équipe ta canne à pêche !")
             return
         end
         if not nearPier(player) then
@@ -40,7 +45,10 @@ remote.OnServerEvent:Connect(function(player, action)
         local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
         if not root then return end
         local start = root.Position + Vector3.new(0, 2, 0)
-        local destination = Vector3.new(math.clamp(start.X, -30, 30), -3.5, math.clamp(start.Z - 40, -200, -90))
+        local rod = getRod(player)
+        local level = rod:GetAttribute("RodLevel") or 1
+        local range = math.clamp(rod:GetAttribute("CastDistance") or 10, 10, 120)
+        local destination = Vector3.new(math.clamp(start.X, -30, 30), -3.5, math.clamp(start.Z - range, -350, -90))
         local bobber = Instance.new("Part")
         bobber.Name = "FishingBobber"
         bobber.Shape = Enum.PartType.Ball
@@ -52,7 +60,6 @@ remote.OnServerEvent:Connect(function(player, action)
         bobber.Position = destination
         bobber.Parent = workspace
 
-        local rod = getRod(player)
         local tip = rod and rod:FindFirstChild("RodTip")
         if tip then
             local a = Instance.new("Attachment")
@@ -73,7 +80,7 @@ remote.OnServerEvent:Connect(function(player, action)
             Debris:AddItem(a, 30)
         end
 
-        local s = {started = os.clock(), taps = 0, needed = math.random(8, 16), lastTap = 0, bobber = bobber, ready = false}
+        local s = {started = os.clock(), taps = 0, needed = math.random(8, 16), lastTap = 0, bobber = bobber, ready = false, rodLevel = level}
         sessions[player] = s
         remote:FireClient(player, "CastStarted")
         task.delay(math.random(2, 4), function()
@@ -107,8 +114,8 @@ remote.OnServerEvent:Connect(function(player, action)
         remote:FireClient(player, "Progress", s.taps, s.needed)
         if s.taps >= s.needed then
             clearSession(player)
-            remote:FireClient(player, "Caught", "Œuf commun")
-            print(player.Name .. " a pêché un œuf commun (prototype)")
+            eggCaught:Fire(player, s.rodLevel)
+            remote:FireClient(player, "Caught", "œuf mystérieux")
         end
     elseif action == "Cancel" then
         clearSession(player)
