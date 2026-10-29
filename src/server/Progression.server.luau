@@ -115,12 +115,14 @@ end
 local function clearDecor(d)
     if d.decor then d.decor:Destroy() d.decor=nil end
 end
-local function renderBase(player)
+local renderBase
+renderBase = function(player)
     local d=data[player]
     if not d or not d.plot then return end
     local plot=getPlot(d)
     if not plot then return end
     clearDecor(d)
+    if d.sign then d.sign:Destroy() d.sign=nil end
     local folder=Instance.new("Folder")
     folder.Name="PlayerBase_"..player.UserId
     folder.Parent=workspace
@@ -351,7 +353,7 @@ task.spawn(function()
             end
             if income>0 then d.cash+=income updateCash(player) end
             if changed then renderBase(player) notify(player,"🥚 Un œuf vient d'éclore !") end
-            if changed or income>0 then snapshot(player) end
+            if changed then snapshot(player) end
         end
     end
 end)
