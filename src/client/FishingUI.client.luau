@@ -1,74 +1,114 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
 local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("FishingEvent")
-
 local gui = Instance.new("ScreenGui")
 gui.Name = "FishingGui"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
-local function label(name, text, y, height)
-    local obj = Instance.new("TextLabel")
-    obj.Name = name
-    obj.Size = UDim2.new(0, 340, 0, height)
-    obj.Position = UDim2.new(0.5, -170, 1, y)
-    obj.BackgroundColor3 = Color3.fromRGB(21, 47, 68)
-    obj.BackgroundTransparency = 0.12
-    obj.TextColor3 = Color3.new(1, 1, 1)
-    obj.Font = Enum.Font.GothamBold
-    obj.TextScaled = true
-    obj.Parent = gui
-    Instance.new("UICorner", obj).CornerRadius = UDim.new(0, 12)
-    return obj
-end
+local status = Instance.new("TextLabel")
+status.Name = "FishingStatus"
+status.AnchorPoint = Vector2.new(0.5, 1)
+status.Position = UDim2.new(0.5, 0, 1, -115)
+status.Size = UDim2.new(0.8, 0, 0, 52)
+status.BackgroundColor3 = Color3.fromRGB(21, 47, 68)
+status.BackgroundTransparency = 0.15
+status.TextColor3 = Color3.new(1, 1, 1)
+status.TextScaled = true
+status.Font = Enum.Font.GothamBold
+status.Text = "🎣 Équipe la canne pour pêcher"
+status.Parent = gui
+Instance.new("UICorner", status).CornerRadius = UDim.new(0, 12)
+local constraint = Instance.new("UISizeConstraint")
+constraint.MaxSize = Vector2.new(430, 52)
+constraint.Parent = status
 
-local status = label("Status", "🎣 Va sur le ponton pour pêcher !", -205, 48)
-local progress = label("Progress", "", -151, 36)
+local progress = Instance.new("Frame")
+progress.Name = "ProgressBackground"
+progress.AnchorPoint = Vector2.new(0.5, 1)
+progress.Position = UDim2.new(0.5, 0, 1, -65)
+progress.Size = UDim2.new(0.7, 0, 0, 24)
+progress.BackgroundColor3 = Color3.fromRGB(32, 52, 65)
 progress.Visible = false
+progress.Parent = gui
+Instance.new("UICorner", progress).CornerRadius = UDim.new(0, 10)
+local sizeConstraint = Instance.new("UISizeConstraint")
+sizeConstraint.MaxSize = Vector2.new(360, 24)
+sizeConstraint.Parent = progress
 
-local button = Instance.new("TextButton")
-button.Name = "FishButton"
-button.Size = UDim2.new(0, 240, 0, 68)
-button.Position = UDim2.new(0.5, -120, 1, -108)
-button.BackgroundColor3 = Color3.fromRGB(41, 164, 222)
-button.TextColor3 = Color3.new(1, 1, 1)
-button.Font = Enum.Font.GothamBold
-button.TextScaled = true
-button.Text = "🎣 LANCER"
-button.Parent = gui
-Instance.new("UICorner", button).CornerRadius = UDim.new(0, 16)
+local fill = Instance.new("Frame")
+fill.Name = "Fill"
+fill.Size = UDim2.fromScale(0, 1)
+fill.BackgroundColor3 = Color3.fromRGB(68, 214, 133)
+fill.Parent = progress
+Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 10)
 
 local state = "idle"
-button.Activated:Connect(function()
-    if state == "idle" then
-        state = "waiting"
-        status.Text = "Attends une touche..."
-        button.Text = "..."
-        remote:FireServer("Cast")
-    elseif state == "reeling" then
+local function equipped()
+    return player.Character and player.Character:FindFirstChild("Canne en bois") ~= nil
+end
+local function cast()
+    if not equipped() then return end
+    state = "waiting"
+    status.Text = "🎣 Ligne lancée... attends une touche !"
+    remote:FireServer("Cast")
+end
+local function tap()
+    if state == "reeling" and equipped() then
         remote:FireServer("Tap")
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed or not equipped() then return end
+    if state == "idle" then
+        if input.UserInputType == Enum.UserInputType.MouseButton2
+            or input.UserInputType == Enum.UserInputType.Touch
+            or input.KeyCode == Enum.KeyCode.ButtonR2 then
+            cast()
+        end
+    elseif state == "reeling" then
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch
+            or input.KeyCode == Enum.KeyCode.ButtonR2 then
+            tap()
+        end
     end
 end)
 
 remote.OnClientEvent:Connect(function(action, a, b)
-    if action == "Bite" then
+    if action == "CastStarted" then
+        status.Text = "🌊 Bouchon à l'eau... attends !"
+    elseif action == "Bite" then
         state = "reeling"
-        status.Text = "🥚 Un œuf a mordu ! Tapote !"
+        status.Text = "🥚 Un œuf mord ! Clique / tapote / R2 !"
         progress.Visible = true
-        progress.Text = "0 / " .. tostring(a)
-        button.Text = "REMONTЕ !"
+        fill.Size = UDim2.fromScale(0, 1)
     elseif action == "Progress" then
-        progress.Text = tostring(a) .. " / " .. tostring(b)
+        fill.Size = UDim2.fromScale(math.clamp(a / b, 0, 1), 1)
     elseif action == "Caught" then
         state = "idle"
         status.Text = "🎉 Tu as pêché : " .. tostring(a)
         progress.Visible = false
-        button.Text = "🎣 RELANCER"
     elseif action == "Message" then
         state = "idle"
         status.Text = tostring(a)
         progress.Visible = false
-        button.Text = "🎣 LANCER"
     end
 end)
+
+local function bindCharacter(character)
+    character.ChildRemoved:Connect(function(child)
+        if child.Name == "Canne en bois" then
+            if state ~= "idle" then remote:FireServer("Cancel") end
+            state = "idle"
+            progress.Visible = false
+            status.Text = "🎣 Équipe la canne pour pêcher"
+        end
+    end)
+end
+player.CharacterAdded:Connect(bindCharacter)
+if player.Character then bindCharacter(player.Character) end
