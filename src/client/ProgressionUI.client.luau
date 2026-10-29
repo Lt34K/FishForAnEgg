@@ -101,11 +101,15 @@ local function drawIndex(d)
     local header=makeLabel(indexPanel,"Header",UDim2.new(),UDim2.new(1,-12,0,42),"📖 INDEX : "..found.."/30")
     header.LayoutOrder=0
     for eggId,names in ipairs(d.creatures or {}) do
+        local habitat=(d.habitats or {})[eggId]
+        local unlocked=habitat and d.rod>=habitat.minRod
+        local section=makeLabel(indexPanel,"Habitat"..eggId,UDim2.new(),UDim2.new(1,-12,0,38),(unlocked and "🌿 " or "🔒 ")..(habitat and habitat.name or "Habitat")..(unlocked and "" or (" | Canne "..tostring(habitat and habitat.minRod or "?"))))
+        section.LayoutOrder=eggId*10-9
         for variant,name in ipairs(names) do
             local id=(eggId-1)*5+variant
             local seen=d.index and d.index[tostring(id)]
             local label=makeLabel(indexPanel,"Creature"..id,UDim2.new(),UDim2.new(1,-12,0,31),(seen and "✓ " or "🔒 ")..(seen and name or "???"))
-            label.LayoutOrder=id
+            label.LayoutOrder=eggId*10-9+variant
             if not seen then label.TextColor3=Color3.fromRGB(157,168,180) end
         end
     end
