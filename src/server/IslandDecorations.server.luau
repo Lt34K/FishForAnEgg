@@ -63,7 +63,7 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     folder.Name=kind.."Stand"
     folder.Parent=decorations
     local function piece(name,size,offset,color,material)
-        local p=block(name,size,Vector3.new(x,0,kind=="Luck" and 28 or -37)+offset,color,material)
+        local p=block(name,size,Vector3.new(x,0,kind=="Luck" and 3 or -37)+offset,color,material)
         p.Parent=folder
         return p
     end
@@ -134,7 +134,7 @@ local function createShop(kind,x,title,subtitle,primary,trim)
 end
 createShop("Rods",-23,"CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(245,199,87))
 createShop("Robux",23,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
-createShop("Luck",0,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
+createShop("Luck",24,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
 
 -- Coastal scenery: deterministic, lightweight, and outside the six build plots.
 local scenery=Instance.new("Folder")
