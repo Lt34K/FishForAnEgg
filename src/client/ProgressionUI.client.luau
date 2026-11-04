@@ -190,6 +190,22 @@ local function drawIndex(d)
             local rarity=(d.rarities or {})[variant] or ""
             local label=makeLabel(indexPanel,"Creature"..id,UDim2.new(),UDim2.new(1,-12,0,31),(seen and "✓ " or "🔒 ")..(seen and name or "???").." · "..rarity)
             label.LayoutOrder=eggId*10-9+variant
+            label.TextScaled=false
+            label.TextSize=14
+            label.TextXAlignment=Enum.TextXAlignment.Left
+            local padding=Instance.new("UIPadding")
+            padding.PaddingLeft=UDim.new(0,25)
+            padding.PaddingRight=UDim.new(0,8)
+            padding.Parent=label
+            local rankColor=({Color3.fromRGB(169,182,192),Color3.fromRGB(91,192,131),Color3.fromRGB(69,173,222),Color3.fromRGB(157,117,226),Color3.fromRGB(217,111,168),Color3.fromRGB(102,149,255),Color3.fromRGB(250,194,80),Color3.fromRGB(255,122,217)})[variant]
+            local marker=Instance.new("Frame")
+            marker.Name="RarityMarker"
+            marker.Size=UDim2.fromOffset(8,18)
+            marker.Position=UDim2.new(0,8,.5,-9)
+            marker.BackgroundColor3=rankColor
+            marker.BorderSizePixel=0
+            marker.Parent=label
+            Instance.new("UICorner",marker).CornerRadius=UDim.new(1,0)
             if not seen then
                 label.TextColor3=Color3.fromRGB(157,168,180)
             elseif variant==8 then
