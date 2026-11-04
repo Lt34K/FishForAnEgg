@@ -387,13 +387,13 @@ for _,side in ipairs({-1,1}) do
 end
 for i=1,8 do
     local z=-78-math.floor((i-1)/2)*19
-    local x=(i%2==0 and 1 or -1)*11
+    local x=-18+(i%2==0 and 1 or -1)*7.2
     scenicPart("FishingCrate",Vector3.new(2.6,2,2.6),Vector3.new(x,6,z),Color3.fromRGB(157,108,63),Enum.Material.WoodPlanks)
     scenicPart("CrateTrim",Vector3.new(2.8,.3,2.8),Vector3.new(x,7.15,z),Color3.fromRGB(103,72,45),Enum.Material.Wood)
 end
 -- A little dockside detail and a lighthouse at the far end of the main island.
 for i=1,6 do
-    scenicPart("PierBollard",Vector3.new(1.2,2,1.2),Vector3.new((i%2==0 and 1 or -1)*8.8,6.4,-76-math.floor((i-1)/2)*26),Color3.fromRGB(90,62,46),Enum.Material.Wood)
+    scenicPart("PierBollard",Vector3.new(1.2,2,1.2),Vector3.new(-18+(i%2==0 and 1 or -1)*8.8,6.4,-76-math.floor((i-1)/2)*26),Color3.fromRGB(90,62,46),Enum.Material.Wood)
 end
 scenicPart("LighthouseBase",Vector3.new(6,18,6),Vector3.new(-104,14,48),Color3.fromRGB(238,234,221),Enum.Material.Concrete,Enum.PartType.Cylinder)
 local beacon=scenicPart("LighthouseBeacon",Vector3.new(7,3,7),Vector3.new(-104,24.5,48),Color3.fromRGB(255,233,133),Enum.Material.Neon,Enum.PartType.Ball)
