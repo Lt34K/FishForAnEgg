@@ -236,9 +236,9 @@ local function createShop(kind,x,title,subtitle,primary,trim)
         end
     end
 end
-createShop("Rods",-36,"CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(245,199,87))
-createShop("Robux",0,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
-createShop("Luck",36,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
+createShop("Rods",-36,"BOUTIQUE CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(71,189,251))
+createShop("Robux",0,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(208,117,255))
+createShop("Luck",36,"BOOSTS DE CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
 
 -- Coastal scenery: deterministic, lightweight, and outside the six build plots.
 local scenery=Instance.new("Folder")
