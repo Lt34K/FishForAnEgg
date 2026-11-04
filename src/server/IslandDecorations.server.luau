@@ -50,6 +50,25 @@ text.Font=Enum.Font.GothamBold
 text.TextScaled=true
 text.Text="FISH FOR AN EGG"
 text.Parent=surface
+-- The entrance sign faces arriving players, not the ocean.
+surface.Face=Enum.NormalId.Back
+-- Dedicated fishing-station sign beside the far end of the pier.
+block("FishingStationPost",Vector3.new(.8,8,.8),Vector3.new(-11.3,8,-129),Color3.fromRGB(120,82,55),Enum.Material.Wood)
+local station=block("FishingStationSign",Vector3.new(9.3,3.3,.55),Vector3.new(-14,12.4,-129),Color3.fromRGB(30,92,138),Enum.Material.WoodPlanks)
+station.CanCollide=false
+local stationFace=Instance.new("SurfaceGui")
+stationFace.Face=Enum.NormalId.Back
+stationFace.Parent=station
+local stationText=Instance.new("TextLabel")
+stationText.Size=UDim2.fromScale(1,1)
+stationText.BackgroundTransparency=1
+stationText.TextColor3=Color3.fromRGB(255,239,184)
+stationText.TextStrokeTransparency=.35
+stationText.Text="🎣  LANCE TA LIGNE !"
+stationText.Font=Enum.Font.GothamBlack
+stationText.TextScaled=true
+stationText.Parent=stationFace
+
 print("Fish for an Egg : island scenery created")
 
 -- Two permanent shops beside the central route, clear of the six player bases.
