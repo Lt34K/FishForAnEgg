@@ -82,6 +82,7 @@ local premiumTitle=makeLabel(premium,"Title",UDim2.new(.04,0,.025,0),UDim2.new(.
 premiumTitle.BackgroundColor3=Color3.fromRGB(76,61,146)
 local closePremium=makeButton(premium,"Close",UDim2.new(.8,0,.025,0),UDim2.new(.16,0,0,48),"✕")
 closePremium.Activated:Connect(function() premium.Visible=false end)
+local state
 local MarketplaceService=game:GetService("MarketplaceService")
 local premiumButtons={}
 local productNames={"🥚 Œuf cosmique divin","🎣 Canne stellaire exclusive","🍀 Chance VIP ×2 · 30 min","💰 Coffre de 100 000 $"}
@@ -234,7 +235,6 @@ local function drawIndex(d)
     end
 end
 
-local state
 local noticeId=0
 toggle.Activated:Connect(function()
     shop.Visible=not shop.Visible
