@@ -72,7 +72,7 @@ for _,v in ipairs({-1,1}) do
 end
 local pedestal=part("EggMonumentPlinth",Vector3.new(5,1.2,5),at(0,6.1,8),Color3.fromRGB(83,123,142),Enum.Material.Slate)
 local egg=part("GoldenEggMonument",Vector3.new(3.9,5,3.9),at(0,9.3,8),Color3.fromRGB(255,216,93),Enum.Material.Neon,"Ball")
-local accent=part("EggHalo",Vector3.new(.35,6.2,6.2),at(0,9.3,8)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(129,239,255),Enum.Material.Neon,"Cylinder")
+local accent=part("EggHalo",Vector3.new(.35,6.2,6.2),at(0,7.1,8)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(129,239,255),Enum.Material.Neon,"Cylinder")
 accent.Transparency=.45
 light(egg,Color3.fromRGB(255,206,103),24,1)
 -- The decorative ring is non-colliding, and paths remain open on both sides.
@@ -91,7 +91,7 @@ for _,side in ipairs({-1,1}) do
     local cap=part("FishingGateCap",Vector3.new(3.1,1.1,3.1),at(x,15.1,-58),gold,Enum.Material.SmoothPlastic)
     light(cap,gold,12,.7)
 end
-local entrySign=part("FishingGateSign",Vector3.new(19,3,.8),at(0,15.1,-58),navy,Enum.Material.SmoothPlastic)
+local entrySign=part("FishingGateSign",Vector3.new(19,3,.8),at(0,15.1,-58)*CFrame.Angles(0,math.rad(180),0),navy,Enum.Material.SmoothPlastic)
 part("FishingGateSignTrim",Vector3.new(20,3.8,.2),at(0,15.1,-57.45),gold,Enum.Material.Neon)
 labelOnFace(entrySign,"PONTON DE PECHE",cream)
 -- Striping, roof contours, display objects and beautifully lit signs on each stand.
@@ -101,7 +101,7 @@ local shops={
     {kind="Luck",x=34,z=6,tint=Color3.fromRGB(72,218,126),icon="LUCK BOOSTS"},
 }
 for _,shop in ipairs(shops) do
-    local m=islandDecor:FindFirstChild(shop.kind.."Stand")
+    local m=islandDecor:WaitForChild(shop.kind.."Stand",20)
     if m then
         local x,z=shop.x,shop.z
         local col=shop.tint
@@ -120,7 +120,7 @@ for _,shop in ipairs(shops) do
             local xx=x-7.2+stripe*1.44
             part(shop.kind.."ScallopedAwning",Vector3.new(1.15,.65,.7),at(xx,10.0,z+7.4),stripe%2==0 and cream or col,Enum.Material.SmoothPlastic,"Ball")
         end
-        local frontSign=part(shop.kind.."PremiumSign",Vector3.new(13.3,2,.4),at(x,17.6,z+3.2),navy,Enum.Material.SmoothPlastic)
+        local frontSign=part(shop.kind.."PremiumSign",Vector3.new(13.3,2,.4),at(x,17.6,z+3.2)*CFrame.Angles(0,math.rad(180),0),navy,Enum.Material.SmoothPlastic)
         labelOnFace(frontSign,shop.icon,cream)
         part(shop.kind.."SignLightUnderline",Vector3.new(13.8,.2,.5),at(x,16.45,z+3.5),col,Enum.Material.Neon)
         for k=1,3 do
