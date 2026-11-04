@@ -38,6 +38,29 @@ spawn.Material = Enum.Material.Neon
 spawn.Color = Color3.fromRGB(87, 229, 185)
 spawn.Parent = world
 
+-- The default Roblox neon spawn pad is hidden under a designed arrival plaza.
+spawn.Transparency=1
+spawn.CanCollide=false
+local arrival=part("ArrivalCircle",Vector3.new(.18,15,15),
+    CFrame.new(0,5.15,-39)*CFrame.Angles(0,0,math.rad(90)),
+    Color3.fromRGB(217,193,148),Enum.Material.Cobblestone)
+arrival.CanCollide=false
+local arrivalCenter=part("ArrivalCenter",Vector3.new(.2,9,9),
+    CFrame.new(0,5.28,-39)*CFrame.Angles(0,0,math.rad(90)),
+    Color3.fromRGB(240,220,175),Enum.Material.Sand)
+arrivalCenter.CanCollide=false
+-- A readable sand perimeter softens the rectangular lawn into a beach boardwalk.
+for _,z in ipairs({-67,67}) do
+    local strip=part("UpperBeach",Vector3.new(233,.18,8),
+        CFrame.new(0,5.09,z),Color3.fromRGB(239,214,151),Enum.Material.Sand)
+    strip.CanCollide=false
+end
+for _,x in ipairs({-116,116}) do
+    local strip=part("UpperBeach",Vector3.new(8,.18,135),
+        CFrame.new(x,5.09,0),Color3.fromRGB(239,214,151),Enum.Material.Sand)
+    strip.CanCollide=false
+end
+
 -- A pier heading toward the sea on the north side.
 part("FishingPier", Vector3.new(18, 2, 95), CFrame.new(0, 4.5, -107), Color3.fromRGB(143, 97, 59), Enum.Material.WoodPlanks)
 for _, z in ipairs({-75, -105, -135}) do
