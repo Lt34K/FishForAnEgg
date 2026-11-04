@@ -296,6 +296,203 @@ task.spawn(function()
         task.wait(1)
     end
 end)
+-- Coastal deluxe UI: reusable visual language for every existing functional menu.
+local TweenService=game:GetService("TweenService")
+local palette={
+    navy=Color3.fromRGB(15,35,62),
+    panel=Color3.fromRGB(24,43,77),
+    blue=Color3.fromRGB(36,134,220),
+    purple=Color3.fromRGB(118,65,207),
+    green=Color3.fromRGB(38,165,99),
+    gold=Color3.fromRGB(244,184,65),
+}
+local function polish(element,accent)
+    element.BorderSizePixel=0
+    element.BackgroundColor3=accent or palette.panel
+    local corner=element:FindFirstChildOfClass("UICorner") or Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,14)
+    corner.Parent=element
+    local stroke=element:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke")
+    stroke.Color=accent or palette.blue
+    stroke.Thickness=2
+    stroke.Transparency=.3
+    stroke.Parent=element
+    local gradient=element:FindFirstChildOfClass("UIGradient") or Instance.new("UIGradient")
+    gradient.Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),
+        ColorSequenceKeypoint.new(1,Color3.fromRGB(167,187,218))
+    })
+    gradient.Rotation=90
+    gradient.Parent=element
+    if element:IsA("TextButton") then
+        element.AutoButtonColor=false
+        element.MouseEnter:Connect(function()
+            TweenService:Create(element,TweenInfo.new(.13),{BackgroundTransparency=.05}):Play()
+            TweenService:Create(stroke,TweenInfo.new(.13),{Transparency=0,Thickness=3}):Play()
+        end)
+        element.MouseLeave:Connect(function()
+            TweenService:Create(element,TweenInfo.new(.13),{BackgroundTransparency=0}):Play()
+            TweenService:Create(stroke,TweenInfo.new(.13),{Transparency=.3,Thickness=2}):Play()
+        end)
+    end
+end
+local function addHeader(panel,title,accent)
+    local header=Instance.new("TextLabel")
+    header.Name="DeluxeHeader"
+    header.Size=UDim2.new(1,-24,0,42)
+    header.Position=UDim2.fromOffset(12,12)
+    header.BackgroundTransparency=1
+    header.Text=title
+    header.TextColor3=Color3.fromRGB(255,240,200)
+    header.TextXAlignment=Enum.TextXAlignment.Left
+    header.Font=Enum.Font.GothamBlack
+    header.TextSize=22
+    header.Parent=panel
+    local line=Instance.new("Frame")
+    line.Name="AccentDivider"
+    line.Size=UDim2.new(1,-24,0,3)
+    line.Position=UDim2.fromOffset(12,57)
+    line.BackgroundColor3=accent
+    line.BorderSizePixel=0
+    line.Parent=panel
+    Instance.new("UICorner",line).CornerRadius=UDim.new(1,0)
+end
+local function iconTile(parent,emoji,position,accent)
+    local tile=Instance.new("TextLabel")
+    tile.Name="IllustratedIcon"
+    tile.Size=UDim2.fromOffset(48,48)
+    tile.Position=position
+    tile.Text=emoji
+    tile.TextScaled=true
+    tile.BackgroundColor3=accent
+    tile.TextColor3=Color3.new(1,1,1)
+    tile.Parent=parent
+    polish(tile,accent)
+    return tile
+end
+gui.IgnoreGuiInset=false
+cash.AnchorPoint=Vector2.new(.5,0)
+cash.Position=UDim2.new(.5,0,0,12)
+cash.Size=UDim2.fromOffset(246,48)
+cash.TextSize=23
+cash.TextScaled=false
+polish(cash,palette.navy)
+inventory.Position=UDim2.fromOffset(12,12)
+inventory.Size=UDim2.fromOffset(158,46)
+inventory.TextScaled=false
+inventory.TextSize=17
+polish(inventory,palette.navy)
+base.Position=UDim2.fromOffset(12,64)
+base.Size=UDim2.fromOffset(158,44)
+base.TextScaled=false
+base.TextSize=15
+polish(base,palette.navy)
+toggle.Position=UDim2.fromOffset(12,136)
+toggle.Size=UDim2.fromOffset(158,49)
+toggle.Text="🛒  CANNES"
+indexToggle.Position=UDim2.fromOffset(12,195)
+indexToggle.Size=UDim2.fromOffset(158,49)
+indexToggle.Text="📖  INDEX"
+polish(toggle,palette.blue)
+polish(indexToggle,palette.purple)
+local premiumToggle=makeButton(gui,"PremiumToggle",UDim2.fromOffset(12,254),UDim2.fromOffset(158,49),"💎  ROBUX")
+local luckToggle=makeButton(gui,"LuckToggle",UDim2.fromOffset(12,313),UDim2.fromOffset(158,49),"🍀  CHANCE")
+polish(premiumToggle,palette.purple)
+polish(luckToggle,palette.green)
+local function hideAll()
+    shop.Visible=false
+    indexPanel.Visible=false
+    premium.Visible=false
+    luckPanel.Visible=false
+end
+premiumToggle.Activated:Connect(function()
+    local show=not premium.Visible
+    hideAll()
+    premium.Visible=show
+end)
+luckToggle.Activated:Connect(function()
+    local show=not luckPanel.Visible
+    hideAll()
+    luckPanel.Visible=show
+end)
+shop.AnchorPoint=Vector2.new(.5,.5)
+shop.Position=UDim2.fromScale(.5,.54)
+shop.Size=UDim2.new(.9,0,.75,0)
+sizeLimit.MaxSize=Vector2.new(460,480)
+shop.BackgroundTransparency=0
+polish(shop,palette.panel)
+addHeader(shop,"🎣  ATELIER DES CANNES",palette.blue)
+rodInfo.Position=UDim2.new(.05,0,.17,0)
+rodInfo.Size=UDim2.new(.9,0,0,62)
+buyRod.Position=UDim2.new(.05,0,.35,0)
+buyRod.Size=UDim2.new(.9,0,0,55)
+baseInfo.Position=UDim2.new(.05,0,.53,0)
+baseInfo.Size=UDim2.new(.9,0,0,54)
+buyBase.Position=UDim2.new(.05,0,.68,0)
+buyBase.Size=UDim2.new(.9,0,0,53)
+decorButton.Position=UDim2.new(.05,0,.83,0)
+decorButton.Size=UDim2.new(.9,0,0,53)
+for _,element in ipairs({rodInfo,baseInfo}) do
+    element.TextScaled=false
+    element.TextSize=18
+    element.TextWrapped=true
+    polish(element,palette.navy)
+end
+for _,element in ipairs({buyRod,buyBase,decorButton}) do
+    element.TextScaled=false
+    element.TextSize=18
+    element.TextWrapped=true
+    polish(element,palette.blue)
+end
+premium.Position=UDim2.fromScale(.5,.52)
+premium.Size=UDim2.new(.94,0,.79,0)
+premiumLimit.MaxSize=Vector2.new(510,540)
+polish(premium,palette.panel)
+premiumTitle.Text="💎  TRÉSORS EXCLUSIFS"
+premiumTitle.TextScaled=false
+premiumTitle.TextSize=21
+premiumTitle.Size=UDim2.new(.7,0,0,48)
+polish(premiumTitle,palette.purple)
+polish(closePremium,palette.purple)
+for i,button in ipairs(premiumButtons) do
+    button.TextXAlignment=Enum.TextXAlignment.Center
+    button.TextSize=17
+    polish(button,palette.purple)
+    iconTile(premium,({"🥚","🎣","🍀","💰"})[i],UDim2.new(.065,0,.17+(i-1)*.17,6),palette.navy)
+    button.ZIndex=2
+end
+premiumFooter.Text="🔒 Achats disponibles après configuration des produits Roblox"
+premiumFooter.TextSize=13
+premiumFooter.TextWrapped=true
+premiumFooter.BackgroundTransparency=1
+luckPanel.Position=UDim2.fromScale(.5,.52)
+luckPanel.Size=UDim2.new(.94,0,.8,0)
+luckLimit.MaxSize=Vector2.new(510,540)
+polish(luckPanel,palette.panel)
+local luckTitle=luckPanel:FindFirstChild("Title")
+if luckTitle then
+    luckTitle.Text="🍀  LABORATOIRE DE CHANCE"
+    luckTitle.TextSize=20
+    luckTitle.TextScaled=false
+    polish(luckTitle,palette.green)
+end
+polish(luckClose,palette.green)
+luckStatus.TextWrapped=true
+polish(luckStatus,palette.navy)
+for _,button in ipairs(luckButtons) do polish(button,palette.green) end
+polish(luckUpgrade,palette.gold)
+indexPanel.AnchorPoint=Vector2.new(.5,.5)
+indexPanel.Position=UDim2.fromScale(.5,.52)
+indexPanel.Size=UDim2.new(.9,0,.78,0)
+limit.MaxSize=Vector2.new(490,550)
+polish(indexPanel,palette.panel)
+notice.AnchorPoint=Vector2.new(.5,0)
+notice.Position=UDim2.new(.5,0,0,67)
+notice.Size=UDim2.fromOffset(330,46)
+polish(notice,palette.gold)
+-- Small icon-like visual accents without external asset IDs or broken images.
+iconTile(gui,"🐟",UDim2.new(.5,-154,0,12),palette.blue)
+
 action:FireServer("Sync")
 
 task.spawn(function()
