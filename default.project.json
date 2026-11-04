@@ -22,6 +22,9 @@
         },
         "IslandDecorations": {
           "$path": "src/server/IslandDecorations.server.luau"
+        },
+        "PremiumWorld": {
+          "$path": "src/server/PremiumWorld.server.luau"
         }
       }
     },
