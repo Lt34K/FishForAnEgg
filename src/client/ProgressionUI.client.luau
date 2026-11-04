@@ -491,7 +491,7 @@ notice.Position=UDim2.new(.5,0,0,67)
 notice.Size=UDim2.fromOffset(330,46)
 polish(notice,palette.gold)
 -- Small icon-like visual accents without external asset IDs or broken images.
-iconTile(gui,"🐟",UDim2.new(.5,-154,0,12),palette.blue)
+local cashIcon=iconTile(gui,"🐟",UDim2.new(.5,-154,0,12),palette.blue)
 
 -- Compact responsive HUD: icons remain visible without dominating the camera.
 local UIS=game:GetService("UserInputService")
@@ -500,12 +500,36 @@ local function fitHud()
     camera=workspace.CurrentCamera or camera
     if not camera then return end
     local width=camera.ViewportSize.X
+    local compact=width<820
     local factor=math.clamp(width/1500,.72,1)
-    for _,button in ipairs({toggle,indexToggle,premiumToggle,luckToggle}) do
+    local buttons={toggle,indexToggle,premiumToggle,luckToggle}
+    for i,button in ipairs(buttons) do
         local scale=button:FindFirstChild("ResponsiveScale") or Instance.new("UIScale")
         scale.Name="ResponsiveScale"
-        scale.Scale=factor
+        scale.Scale=compact and 1 or factor
         scale.Parent=button
+        button.Position=compact and UDim2.fromOffset(12,163+(i-1)*49) or UDim2.fromOffset(12,136+(i-1)*59)
+        button.Size=compact and UDim2.fromOffset(144,42) or UDim2.fromOffset(158,49)
+        button.TextSize=compact and 15 or 18
+        button.TextScaled=false
+    end
+    cashIcon.Visible=not compact
+    if compact then
+        cash.AnchorPoint=Vector2.new(0,0)
+        cash.Position=UDim2.fromOffset(12,113)
+        cash.Size=UDim2.fromOffset(158,42)
+        cash.TextSize=17
+        notice.AnchorPoint=Vector2.new(.5,1)
+        notice.Position=UDim2.new(.5,0,1,-189)
+        notice.Size=UDim2.fromOffset(math.min(330,width-28),44)
+    else
+        cash.AnchorPoint=Vector2.new(.5,0)
+        cash.Position=UDim2.new(.5,0,0,12)
+        cash.Size=UDim2.fromOffset(246,48)
+        cash.TextSize=23
+        notice.AnchorPoint=Vector2.new(.5,0)
+        notice.Position=UDim2.new(.5,0,0,67)
+        notice.Size=UDim2.fromOffset(330,46)
     end
 end
 fitHud()
