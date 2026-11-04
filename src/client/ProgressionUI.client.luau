@@ -99,22 +99,6 @@ local premiumFooter=makeLabel(premium,"Footer",UDim2.new(.05,0,.87,0),UDim2.new(
 premiumFooter.TextScaled=false
 premiumFooter.TextSize=15
 premiumFooter.TextWrapped=true
-local worldShop=ReplicatedStorage:WaitForChild("OpenWorldShop")
-worldShop.OnClientEvent:Connect(function(kind)
-    if kind=="Rods" then
-        luckPanel.Visible=false
-        premium.Visible=false
-        indexPanel.Visible=false
-        shop.Visible=true
-    elseif kind=="Robux" then
-        luckPanel.Visible=false
-        premium.Visible=true
-        shop.Visible=false
-        indexPanel.Visible=false
-    end
-end)
-local decorButton=makeButton(shop,"BuyDecoration",UDim2.new(.04,0,0,275),UDim2.new(.92,0,0,48),"Décorations de base")
-decorButton.Activated:Connect(function() action:FireServer("BuyDecoration") end)
 
 local luckPanel=Instance.new("Frame")
 luckPanel.Name="LuckShop"
@@ -148,6 +132,23 @@ luckUpgrade.TextScaled=false
 luckUpgrade.TextSize=16
 luckUpgrade.TextWrapped=true
 luckUpgrade.Activated:Connect(function() action:FireServer("BuyLuckUpgrade") end)
+
+local worldShop=ReplicatedStorage:WaitForChild("OpenWorldShop")
+worldShop.OnClientEvent:Connect(function(kind)
+    if kind=="Rods" then
+        luckPanel.Visible=false
+        premium.Visible=false
+        indexPanel.Visible=false
+        shop.Visible=true
+    elseif kind=="Robux" then
+        luckPanel.Visible=false
+        premium.Visible=true
+        shop.Visible=false
+        indexPanel.Visible=false
+    end
+end)
+local decorButton=makeButton(shop,"BuyDecoration",UDim2.new(.04,0,0,275),UDim2.new(.92,0,0,48),"Décorations de base")
+decorButton.Activated:Connect(function() action:FireServer("BuyDecoration") end)
 local notice=makeLabel(gui,"Notice",UDim2.new(.5,-170,0,12),UDim2.fromOffset(340,48),"")
 notice.Visible=false
 
