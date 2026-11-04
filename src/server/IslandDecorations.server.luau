@@ -258,6 +258,30 @@ for i=1,7 do
     wedge("SnowRidge"..i,Vector3.new(32,h*.26,40),CFrame.new(x-4,-4+h*.84,z-8)*CFrame.Angles(0,math.rad(25),0),
         Color3.fromRGB(234,242,250),Enum.Material.Snow)
 end
+-- Layered hub plaza and guided walkways create a deliberate central composition.
+scenicPart("PlazaFoundation",Vector3.new(32,.3,22),Vector3.new(0,5.25,7),Color3.fromRGB(180,165,144),Enum.Material.Cobblestone)
+for i=1,18 do
+    local theta=i*math.pi/9
+    local x=math.cos(theta)*15
+    local z=7+math.sin(theta)*10
+    scenicPart("PlazaEdging",Vector3.new(3,.55,1.2),Vector3.new(x,5.6,z),Color3.fromRGB(117,109,100),Enum.Material.Slate)
+end
+for _,side in ipairs({-1,1}) do
+    for _,z in ipairs({-48,-29,-10,10,30,50}) do
+        scenicPart("PathFlowerBed",Vector3.new(4,.65,3),Vector3.new(side*13,5.45,z),Color3.fromRGB(92,127,74),Enum.Material.Grass)
+        for j=1,4 do
+            local x=side*(11.7+j*.48)
+            local flower=scenicPart("Bloom",Vector3.new(.65,.65,.65),Vector3.new(x,6,z+((j%2)*1.3-.65)),({Color3.fromRGB(253,162,184),Color3.fromRGB(255,228,126),Color3.fromRGB(195,159,255)})[(j%3)+1],Enum.Material.Neon,Enum.PartType.Ball)
+            flower.CanCollide=false
+        end
+    end
+end
+for _,z in ipairs({-22,24}) do
+    for _,side in ipairs({-1,1}) do
+        scenicPart("BenchSeat",Vector3.new(5,.45,1.6),Vector3.new(side*19,6,z),Color3.fromRGB(151,99,59),Enum.Material.WoodPlanks)
+        scenicPart("BenchBack",Vector3.new(5,2,.4),Vector3.new(side*19,7,z+1),Color3.fromRGB(119,79,49),Enum.Material.Wood)
+    end
+end
 -- A little dockside detail and a lighthouse at the far end of the main island.
 for i=1,6 do
     scenicPart("PierBollard",Vector3.new(1.2,2,1.2),Vector3.new((i%2==0 and 1 or -1)*8.8,6.4,-76-math.floor((i-1)/2)*26),Color3.fromRGB(90,62,46),Enum.Material.Wood)
