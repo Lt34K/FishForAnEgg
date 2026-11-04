@@ -108,6 +108,29 @@ local function grantRod(player)
     end
     buildRod(d.rod,d.premiumRod).Parent=backpack
 end
+local function refreshLuckAura(player)
+    local d=data[player]
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    if not d or not root then return end
+    local existing=root:FindFirstChild("FishLuckAura")
+    local active=(d.luckExpires or 0)>os.time()
+    if not active then
+        if existing then existing:Destroy() end
+        return
+    end
+    if existing then return end
+    local emitter=Instance.new("ParticleEmitter")
+    emitter.Name="FishLuckAura"
+    emitter.Rate=6
+    emitter.Lifetime=NumberRange.new(.8,1.5)
+    emitter.Speed=NumberRange.new(.5,1.5)
+    emitter.SpreadAngle=Vector2.new(180,180)
+    emitter.Color=ColorSequence.new(Color3.fromRGB(92,255,139),Color3.fromRGB(250,235,110))
+    emitter.LightEmission=.5
+    emitter.Size=NumberSequence.new(.3)
+    emitter.Parent=root
+end
 local function getPlot(d)
     local world=workspace:FindFirstChild("FishWorld")
     local folder=world and world:FindFirstChild("BasePlots")
@@ -582,6 +605,7 @@ action.OnServerEvent:Connect(function(player,command,requested)
         d.luckExpires=os.time()+potion.duration
         updateCash(player)
         snapshot(player)
+        refreshLuckAura(player)
         notify(player,potion.name.." activé !")
     elseif command=="BuyDecoration" then
         local nextLevel=(d.decorationLevel or 0)+1
@@ -668,6 +692,7 @@ MarketplaceService.ProcessReceipt=function(receiptInfo)
             elseif selected.key=="SpecialRod" then d.premiumRod=true grantRod(player)
             elseif selected.key=="LuckBoost" then d.luckBonus=1 d.luckExpires=math.max(os.time(),d.luckExpires or 0)+1800
             elseif selected.key=="CashPack" then d.cash+=100000 updateCash(player) end
+            refreshLuckAura(player)
             notify(player,"Achat Robux reçu : "..selected.name.." !")
             snapshot(player)
         end
@@ -739,6 +764,7 @@ Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
         task.wait(.5)
         grantRod(player)
+        refreshLuckAura(player)
     end)
     -- Roblox may recreate Backpack during spawn: retry until the rod is present.
     task.spawn(function()
@@ -765,6 +791,7 @@ Players.PlayerAdded:Connect(function(player)
         grantRod(player)
         local world=workspace:WaitForChild("FishWorld",15)
         if world then renderBase(player) end
+        refreshLuckAura(player)
         snapshot(player)
         notify(player,"Ta base est la base "..plot.." !")
     end)
@@ -784,6 +811,12 @@ end)
 task.spawn(function()
     while task.wait(1) do
         for player,d in pairs(data) do
+            if (d.luckExpires or 0)>0 and os.time()>=d.luckExpires then
+                d.luckExpires=0
+                d.luckBonus=0
+                refreshLuckAura(player)
+                snapshot(player)
+            end
             local income=0
             local changed=false
             for _,entry in pairs(d.slots) do
