@@ -37,7 +37,7 @@ local function snapshot(player)
     for i,entry in pairs(d.slots) do
         if entry then slots[i] = {egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt,creature=entry.creature} end
     end
-    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats,decorations=Config.BaseDecorations,decorationLevel=d.decorationLevel})
+    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats,decorations=Config.BaseDecorations,decorationLevel=d.decorationLevel,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus,luckPotions=Config.LuckPotions,luckUpgrades=Config.LuckUpgrades})
 end
 local function updateCash(player)
     local d=data[player]
@@ -407,8 +407,16 @@ renderBase = function(player)
             elseif #current.inventory>0 then
                 local eggIndex=table.remove(current.inventory,1)
                 current.slots[i]={egg=eggIndex,hatched=false,readyAt=os.time()+Config.Eggs[eggIndex].hatch,creature=(function()
-                    local roll=math.random(1,100)
+                    local activeBonus=(current.luckExpires or 0)>os.time() and (current.luckBonus or 0) or 0
+                    local bonus=activeBonus+(Config.LuckUpgrades[current.luckLevel or 0] and Config.LuckUpgrades[current.luckLevel].bonus or 0)
+                    local totalWeight=0
+                    local weights={}
                     for rarity,weight in ipairs(Config.CreatureWeights) do
+                        weights[rarity]=weight*(rarity>=6 and (1+bonus) or 1)
+                        totalWeight+=weights[rarity]
+                    end
+                    local roll=math.random()*totalWeight
+                    for rarity,weight in ipairs(weights) do
                         roll-=weight
                         if roll<=0 then return rarity end
                     end
@@ -435,7 +443,7 @@ local function save(player)
     busySave[player]=true
     local slots={}
     for i,e in pairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt,creature=e.creature} end end
-    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel}
+    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus}
     local ok,err=pcall(function()
         store:UpdateAsync("P_"..player.UserId,function() return payload end)
     end)
@@ -492,6 +500,27 @@ action.OnServerEvent:Connect(function(player,command,requested)
         renderBase(player)
         notify(player,"Base améliorée ! "..Config.BaseSlots[nextLevel].." emplacements.")
         snapshot(player)
+    elseif command=="BuyLuckUpgrade" then
+        local nextLevel=(d.luckLevel or 0)+1
+        local upgrade=Config.LuckUpgrades[nextLevel]
+        if not upgrade then notify(player,"Chance permanente au maximum !") return end
+        if d.cash<upgrade.price then notify(player,"Il te faut "..fmt(upgrade.price).." $ !") return end
+        d.cash-=upgrade.price
+        d.luckLevel=nextLevel
+        updateCash(player)
+        snapshot(player)
+        notify(player,"Chance permanente améliorée !")
+    elseif command=="BuyLuckPotion" then
+        local potion=Config.LuckPotions[tonumber(requested) or 0]
+        if not potion then return end
+        if d.cash<potion.price then notify(player,"Il te faut "..fmt(potion.price).." $ !") return end
+        d.cash-=potion.price
+        -- A new potion replaces the active effect; duration never stacks.
+        d.luckBonus=potion.bonus
+        d.luckExpires=os.time()+potion.duration
+        updateCash(player)
+        snapshot(player)
+        notify(player,potion.name.." activé !")
     elseif command=="BuyDecoration" then
         local nextLevel=(d.decorationLevel or 0)+1
         local decoration=Config.BaseDecorations[nextLevel]
@@ -538,7 +567,7 @@ Players.PlayerAdded:Connect(function(player)
         cash=math.max(0,tonumber(saved.cash) or 0),
         rod=math.clamp(math.floor(tonumber(saved.rod) or 1),1,#Config.Rods),
         base=math.clamp(math.floor(tonumber(saved.base) or 1),1,#Config.BaseSlots),
-        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),loaded=ok
+        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),luckLevel=math.clamp(math.floor(tonumber(saved.luckLevel) or 0),0,#Config.LuckUpgrades),luckExpires=tonumber(saved.luckExpires) or 0,luckBonus=math.clamp(tonumber(saved.luckBonus) or 0,0,1),loaded=ok
     }
     if type(saved.index)=="table" then
         for key,value in pairs(saved.index) do
