@@ -247,4 +247,5 @@ for i=1,6 do
         part("SeabirdWing",Vector3.new(3.5,.2,.75),at(x+side*1.8,y,z)*CFrame.Angles(0,0,math.rad(side*15)),Color3.fromRGB(243,249,252),Enum.Material.SmoothPlastic)
     end
 end
+folder:SetAttribute("Ready",true)
 print("Fish for an Egg: premium plaza, detailed shops, boats and waterfront cosmetics ready")
