@@ -138,25 +138,6 @@ luckUpgrade.TextSize=16
 luckUpgrade.TextWrapped=true
 luckUpgrade.Activated:Connect(function() action:FireServer("BuyLuckUpgrade") end)
 
-local worldShop=ReplicatedStorage:WaitForChild("OpenWorldShop")
-worldShop.OnClientEvent:Connect(function(kind)
-    if kind=="Rods" then
-        luckPanel.Visible=false
-        premium.Visible=false
-        indexPanel.Visible=false
-        shop.Visible=true
-    elseif kind=="Robux" then
-        luckPanel.Visible=false
-        premium.Visible=true
-        shop.Visible=false
-        indexPanel.Visible=false
-    elseif kind=="Luck" then
-        luckPanel.Visible=true
-        premium.Visible=false
-        shop.Visible=false
-        indexPanel.Visible=false
-    end
-end)
 local decorButton=makeButton(shop,"BuyDecoration",UDim2.new(.04,0,0,275),UDim2.new(.92,0,0,48),"Décorations de base")
 decorButton.Activated:Connect(function() action:FireServer("BuyDecoration") end)
 local notice=makeLabel(gui,"Notice",UDim2.new(.5,-170,0,12),UDim2.fromOffset(340,48),"")
@@ -234,6 +215,26 @@ local function drawIndex(d)
         end)
     end
 end
+
+local worldShop=ReplicatedStorage:WaitForChild("OpenWorldShop")
+worldShop.OnClientEvent:Connect(function(kind)
+    if kind=="Rods" then
+        luckPanel.Visible=false
+        premium.Visible=false
+        indexPanel.Visible=false
+        shop.Visible=true
+    elseif kind=="Robux" then
+        luckPanel.Visible=false
+        premium.Visible=true
+        shop.Visible=false
+        indexPanel.Visible=false
+    elseif kind=="Luck" then
+        luckPanel.Visible=true
+        premium.Visible=false
+        shop.Visible=false
+        indexPanel.Visible=false
+    end
+end)
 
 local noticeId=0
 toggle.Activated:Connect(function()
