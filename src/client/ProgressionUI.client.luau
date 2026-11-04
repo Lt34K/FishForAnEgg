@@ -65,6 +65,52 @@ local rodInfo=makeLabel(shop,"RodInfo",UDim2.new(.04,0,.04,0),UDim2.new(.92,0,0,
 local buyRod=makeButton(shop,"BuyRod",UDim2.new(.04,0,.33,0),UDim2.new(.92,0,0,52),"Acheter la prochaine canne")
 local baseInfo=makeLabel(shop,"BaseInfo",UDim2.new(.04,0,.56,0),UDim2.new(.92,0,0,48),"Base niveau 1")
 local buyBase=makeButton(shop,"BuyBase",UDim2.new(.04,0,.78,0),UDim2.new(.92,0,0,48),"Améliorer la base")
+-- Premium stand preview. Actual Robux purchases require published product/pass IDs.
+local premium=Instance.new("Frame")
+premium.Name="RobuxShop"
+premium.AnchorPoint=Vector2.new(.5,.5)
+premium.Position=UDim2.fromScale(.5,.5)
+premium.Size=UDim2.new(.88,0,.68,0)
+premium.BackgroundColor3=Color3.fromRGB(39,32,79)
+premium.Visible=false
+premium.Parent=gui
+Instance.new("UICorner",premium).CornerRadius=UDim.new(0,14)
+local premiumLimit=Instance.new("UISizeConstraint")
+premiumLimit.MaxSize=Vector2.new(420,430)
+premiumLimit.Parent=premium
+local premiumTitle=makeLabel(premium,"Title",UDim2.new(.04,0,.025,0),UDim2.new(.73,0,0,48),"💎 BOUTIQUE ROBUX")
+premiumTitle.BackgroundColor3=Color3.fromRGB(76,61,146)
+local closePremium=makeButton(premium,"Close",UDim2.new(.8,0,.025,0),UDim2.new(.16,0,0,48),"✕")
+closePremium.Activated:Connect(function() premium.Visible=false end)
+local premiumItems={
+    {"🎣 Canne exclusive","Objet cosmétique premium"},
+    {"⚡ Éclosion rapide","Bonus de confort"},
+    {"🎨 Skin de base VIP","Personnalisation exclusive"},
+    {"🥚 Emplacements bonus","Plus de place pour collectionner"},
+}
+for i,item in ipairs(premiumItems) do
+    local card=makeLabel(premium,"Premium"..i,UDim2.new(.05,0,.17+(i-1)*.17,0),UDim2.new(.9,0,.145,0),item[1].."\n"..item[2])
+    card.TextScaled=false
+    card.TextSize=17
+    card.TextWrapped=true
+    card.BackgroundColor3=Color3.fromRGB(63,54,115)
+end
+local premiumFooter=makeLabel(premium,"Footer",UDim2.new(.05,0,.87,0),UDim2.new(.9,0,.1,0),"Achats bientôt disponibles")
+premiumFooter.TextScaled=false
+premiumFooter.TextSize=15
+premiumFooter.TextWrapped=true
+local worldShop=ReplicatedStorage:WaitForChild("OpenWorldShop")
+worldShop.OnClientEvent:Connect(function(kind)
+    if kind=="Rods" then
+        premium.Visible=false
+        indexPanel.Visible=false
+        shop.Visible=true
+    elseif kind=="Robux" then
+        premium.Visible=true
+        shop.Visible=false
+        indexPanel.Visible=false
+    end
+end)
 local notice=makeLabel(gui,"Notice",UDim2.new(.5,-170,0,12),UDim2.fromOffset(340,48),"")
 notice.Visible=false
 
