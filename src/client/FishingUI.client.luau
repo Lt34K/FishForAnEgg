@@ -65,6 +65,15 @@ local function equipped()
     end
     return false
 end
+-- Keep the fishing hint out of the way until a rod is equipped.
+task.spawn(function()
+    while gui.Parent do
+        local hasRod=equipped()
+        status.Visible=hasRod
+        if not hasRod then progress.Visible=false end
+        task.wait(.35)
+    end
+end)
 local function cast()
     if not equipped() then return end
     state = "waiting"
