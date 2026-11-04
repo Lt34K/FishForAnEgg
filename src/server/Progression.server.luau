@@ -37,7 +37,7 @@ local function snapshot(player)
     for i,entry in pairs(d.slots) do
         if entry then slots[i] = {egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt,creature=entry.creature} end
     end
-    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats})
+    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats,decorations=Config.BaseDecorations,decorationLevel=d.decorationLevel})
 end
 local function updateCash(player)
     local d=data[player]
@@ -312,7 +312,7 @@ local function createEggOrCreature(parent,entry,config,position)
     label.TextStrokeTransparency=.15
     label.TextScaled=true
     label.Font=Enum.Font.GothamBold
-    label.Text=(entry.hatched and ((Config.CreatureRarities[variant] or "").." | "..creatureName) or config.name)..(entry.hatched and ("\\n+"..fmt(config.income).." $/s") or "\\nEn incubation")
+    label.Text=(entry.hatched and ((Config.CreatureRarities[variant] or "").." | "..creatureName) or config.name)..(entry.hatched and ("\\n+"..fmt(config.income*(Config.CreatureIncomeMultipliers[variant] or 1)).." $/s") or "\\nEn incubation")
     label.Parent=board
 end
 
@@ -353,6 +353,30 @@ renderBase = function(player)
     plot.Color=skinConfig.color
     local border=plot.Parent and plot.Parent:FindFirstChild("BaseBorder"..d.plot)
     if border then border.Color=skinConfig.color:Lerp(Color3.new(0,0,0),.35) end
+    -- Persistent cosmetic upgrades purchased with animal income.
+    for level=1,(d.decorationLevel or 0) do
+        local decorCfg=Config.BaseDecorations[level]
+        if decorCfg then
+            for _,side in ipairs({-1,1}) do
+                local deco=Instance.new("Part")
+                deco.Name="Decoration_"..level
+                deco.Size=Vector3.new(1.8,2+level*.5,1.8)
+                deco.Position=plot.Position+Vector3.new(side*(18-level*1.8),1.8+level*.25,14)
+                deco.Anchored=true
+                deco.CanCollide=false
+                deco.Material=level>=3 and Enum.Material.Neon or Enum.Material.SmoothPlastic
+                deco.Color=decorCfg.color
+                deco.Parent=folder
+                if level>=3 then
+                    local light=Instance.new("PointLight")
+                    light.Color=decorCfg.color
+                    light.Range=10
+                    light.Brightness=.8
+                    light.Parent=deco
+                end
+            end
+        end
+    end
     local limit=Config.BaseSlots[d.base]
     for i=1,limit do
         local col=(i-1)%5
@@ -411,7 +435,7 @@ local function save(player)
     busySave[player]=true
     local slots={}
     for i,e in pairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt,creature=e.creature} end end
-    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin}
+    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel}
     local ok,err=pcall(function()
         store:UpdateAsync("P_"..player.UserId,function() return payload end)
     end)
@@ -468,6 +492,17 @@ action.OnServerEvent:Connect(function(player,command,requested)
         renderBase(player)
         notify(player,"Base améliorée ! "..Config.BaseSlots[nextLevel].." emplacements.")
         snapshot(player)
+    elseif command=="BuyDecoration" then
+        local nextLevel=(d.decorationLevel or 0)+1
+        local decoration=Config.BaseDecorations[nextLevel]
+        if not decoration then notify(player,"Toutes les décorations sont débloquées !") return end
+        if d.cash<decoration.price then notify(player,"Il te faut "..fmt(decoration.price).." $ !") return end
+        d.cash-=decoration.price
+        d.decorationLevel=nextLevel
+        updateCash(player)
+        renderBase(player)
+        snapshot(player)
+        notify(player,"Décoration débloquée : "..decoration.name.." !")
     elseif command=="EquipSkin" then
         local skinId=tonumber(requested)
         local skin=skinId and Config.Skins[skinId]
@@ -503,7 +538,7 @@ Players.PlayerAdded:Connect(function(player)
         cash=math.max(0,tonumber(saved.cash) or 0),
         rod=math.clamp(math.floor(tonumber(saved.rod) or 1),1,#Config.Rods),
         base=math.clamp(math.floor(tonumber(saved.base) or 1),1,#Config.BaseSlots),
-        plot=plot,inventory={},slots={},index={},skin=1,loaded=ok
+        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),loaded=ok
     }
     if type(saved.index)=="table" then
         for key,value in pairs(saved.index) do
@@ -609,7 +644,7 @@ task.spawn(function()
                             end
                         end
                     end
-                    if entry.hatched then income+=Config.Eggs[entry.egg].income end
+                    if entry.hatched then income+=Config.Eggs[entry.egg].income*(Config.CreatureIncomeMultipliers[entry.creature or 1] or 1) end
                 end
             end
             if income>0 then d.cash+=income updateCash(player) end
