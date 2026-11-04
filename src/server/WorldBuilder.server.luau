@@ -64,6 +64,42 @@ for i, position in ipairs(positions) do
     part("BaseBorder"..i, Vector3.new(44, 0.4, 35), CFrame.new(position - Vector3.new(0, 0.45, 0)), Color3.fromRGB(49, 107, 150), Enum.Material.SmoothPlastic, bases)
 end
 
+-- Invisible coast barriers keep players on land; the pier has protective side rails.
+local function barrier(name,size,position)
+    local wall=part(name,size,CFrame.new(position),Color3.fromRGB(255,255,255),Enum.Material.SmoothPlastic)
+    wall.Transparency=1
+    wall.CanCollide=true
+    wall.CanTouch=false
+    wall.CastShadow=false
+end
+barrier("CoastWest",Vector3.new(3,22,154),Vector3.new(-122,10,0))
+barrier("CoastEast",Vector3.new(3,22,154),Vector3.new(122,10,0))
+barrier("CoastSouth",Vector3.new(244,22,3),Vector3.new(0,10,72))
+barrier("CoastNorthLeft",Vector3.new(113,22,3),Vector3.new(-65,10,-72))
+barrier("CoastNorthRight",Vector3.new(113,22,3),Vector3.new(65,10,-72))
+for _,side in ipairs({-1,1}) do
+    local rail=part("PierSafetyRail",Vector3.new(1,3,93),CFrame.new(side*9,6.8,-107),Color3.fromRGB(112,77,50),Enum.Material.Wood)
+    rail.CanCollide=true
+end
+barrier("PierEnd",Vector3.new(19,4,1),Vector3.new(0,7,-155))
+-- Falling or jumping into the ocean returns the player safely to the beach.
+local Players=game:GetService("Players")
+local RunService=game:GetService("RunService")
+local elapsed=0
+RunService.Heartbeat:Connect(function(dt)
+    elapsed+=dt
+    if elapsed<.5 then return end
+    elapsed=0
+    for _,player in ipairs(Players:GetPlayers()) do
+        local character=player.Character
+        local root=character and character:FindFirstChild("HumanoidRootPart")
+        if root and root.Position.Y<0 then
+            root.AssemblyLinearVelocity=Vector3.zero
+            character:PivotTo(CFrame.new(0,9,-39))
+        end
+    end
+end)
+
 -- Soft coastal lighting, consistent across servers.
 local Lighting=game:GetService("Lighting")
 Lighting.ClockTime=15.3
