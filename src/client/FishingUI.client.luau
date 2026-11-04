@@ -13,18 +13,29 @@ local status = Instance.new("TextLabel")
 status.Name = "FishingStatus"
 status.AnchorPoint = Vector2.new(0.5, 1)
 status.Position = UDim2.new(0.5, 0, 1, -115)
-status.Size = UDim2.new(0.8, 0, 0, 52)
+status.Size = UDim2.fromOffset(390, 52)
 status.BackgroundColor3 = Color3.fromRGB(21, 47, 68)
 status.BackgroundTransparency = 0.15
 status.TextColor3 = Color3.new(1, 1, 1)
-status.TextScaled = true
+status.TextScaled = false
+status.TextSize = 19
+status.TextWrapped = true
 status.Font = Enum.Font.GothamBold
 status.Text = "🎣 Équipe la canne pour pêcher"
 status.Parent = gui
 Instance.new("UICorner", status).CornerRadius = UDim.new(0, 12)
 local constraint = Instance.new("UISizeConstraint")
-constraint.MaxSize = Vector2.new(430, 52)
+constraint.MaxSize = Vector2.new(390, 52)
 constraint.Parent = status
+local widthScale = Instance.new("UIScale")
+widthScale.Parent = status
+local camera = workspace.CurrentCamera
+local function updateScale()
+    camera = workspace.CurrentCamera or camera
+    if camera then widthScale.Scale = math.min(1, math.max(.62, (camera.ViewportSize.X - 24) / 390)) end
+end
+updateScale()
+if camera then camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale) end
 
 local progress = Instance.new("Frame")
 progress.Name = "ProgressBackground"
