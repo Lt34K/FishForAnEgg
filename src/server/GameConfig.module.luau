@@ -44,6 +44,14 @@ Config.Creatures = {
 }
 Config.CreatureRarities = {"Commun", "Commun", "Peu commun", "Rare", "Rare", "Épique", "Légendaire", "Divin"}
 Config.CreatureWeights = {35,25,16,10,7,4,2,1}
+-- Set real Developer Product IDs in Creator Dashboard before enabling purchases.
+-- IDs left at zero intentionally disable checkout; no fictitious Robux transactions.
+Config.PremiumProducts = {
+    {key="SpecialEgg",name="Œuf cosmique",productId=0,description="Œuf spécial à créature mythique"},
+    {key="SpecialRod",name="Canne stellaire",productId=0,description="Canne exclusive (cosmétique)"},
+    {key="LuckBoost",name="Chance VIP",productId=0,description="Boost de chance ×2 pendant 30 min"},
+    {key="CashPack",name="Coffre de pièces",productId=0,description="Argent du jeu : 100 000 $"},
+}
 Config.LuckPotions = {
     {name="Potion de chance",price=10000,duration=600,bonus=.25},
     {name="Fer à cheval doré",price=250000,duration=900,bonus=.5},
