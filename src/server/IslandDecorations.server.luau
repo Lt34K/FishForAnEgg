@@ -76,6 +76,17 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     end
     piece("Roof",Vector3.new(16,1,13),Vector3.new(0,12.8,0),primary,Enum.Material.SmoothPlastic)
     piece("RoofStripe",Vector3.new(16,.35,1.2),Vector3.new(0,13.4,-5.7),trim,Enum.Material.Neon)
+    -- Tiered pitched roof, front step and illuminated storefront trim.
+    piece("ShopStep",Vector3.new(13,.45,3),Vector3.new(0,5.28,-7.1),Color3.fromRGB(192,166,132),Enum.Material.Cobblestone)
+    for _,side in ipairs({-1,1}) do
+        local slope=piece("RoofSlope",Vector3.new(8.4,.65,13.5),Vector3.new(side*3.85,13.9,0),primary,Enum.Material.Slate)
+        slope.CFrame=slope.CFrame*CFrame.Angles(0,0,math.rad(-side*13))
+        piece("RoofEndCap",Vector3.new(.75,.8,13.7),Vector3.new(side*7.9,12.95,0),trim,Enum.Material.Wood)
+        piece("CounterFoot",Vector3.new(1.5,1.5,2.2),Vector3.new(side*4.6,6.3,-3.6),Color3.fromRGB(91,66,54),Enum.Material.Wood)
+    end
+    piece("RoofCrest",Vector3.new(1.3,.8,14),Vector3.new(0,14.7,0),trim,Enum.Material.Wood)
+    piece("FrontFascia",Vector3.new(15,.6,.4),Vector3.new(0,10.25,-7.35),trim,Enum.Material.Neon)
+
     -- Layered striped canopy, fascia lights and shop window details.
     for stripe=1,8 do
         local shade=stripe%2==0 and trim or Color3.fromRGB(245,240,220)
@@ -142,9 +153,10 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     icon.TextColor3=Color3.new(1,1,1)
     icon.Parent=iconBackground
     local floating=Instance.new("BillboardGui")
-    floating.Size=UDim2.fromOffset(210,45)
-    floating.StudsOffset=Vector3.new(0,3,0)
-    floating.AlwaysOnTop=true
+    floating.Size=UDim2.fromOffset(190,34)
+    floating.StudsOffset=Vector3.new(0,2.1,0)
+    floating.AlwaysOnTop=false
+    floating.MaxDistance=46
     floating.Parent=sign
     local floatingLabel=Instance.new("TextLabel")
     floatingLabel.Size=UDim2.fromScale(1,1)
