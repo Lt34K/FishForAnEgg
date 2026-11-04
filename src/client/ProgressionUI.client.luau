@@ -281,6 +281,21 @@ events.OnClientEvent:Connect(function(kind,payload)
         task.delay(4,function() if id==noticeId then notice.Visible=false end end)
     end
 end)
+task.spawn(function()
+    while gui.Parent do
+        if state then
+            local remaining=math.max(0,(state.luckExpires or 0)-os.time())
+            local permanent=(state.luckUpgrades or {})[state.luckLevel or 0]
+            local bonus=permanent and permanent.bonus or 0
+            if remaining>0 then
+                luckStatus.Text=string.format("🍀 Permanent +%d%% | Potion +%d%% | %02d:%02d restantes",math.floor(bonus*100),math.floor((state.luckBonus or 0)*100),math.floor(remaining/60),remaining%60)
+            else
+                luckStatus.Text="🍀 Chance permanente +"..math.floor(bonus*100).."% | Aucune potion active"
+            end
+        end
+        task.wait(1)
+    end
+end)
 action:FireServer("Sync")
 
 task.spawn(function()
