@@ -294,6 +294,23 @@ for _,z in ipairs({-48,-30,-12,8,26,44}) do
         light.Parent=lamp
     end
 end
+-- Village market garden and dock furnishings.
+for _,side in ipairs({-1,1}) do
+    for _,z in ipairs({-42,-24,-6,12,30,48}) do
+        local x=side*18
+        scenicPart("FlowerPlanter",Vector3.new(3,1,3),Vector3.new(x,5.8,z),Color3.fromRGB(147,94,55),Enum.Material.WoodPlanks)
+        scenicPart("PlanterFoliage",Vector3.new(3.2,1.1,3.2),Vector3.new(x,6.5,z),Color3.fromRGB(54,149,78),Enum.Material.Grass,Enum.PartType.Ball)
+        for j=1,3 do
+            scenicPart("FlowerBloom",Vector3.new(.55,.55,.55),Vector3.new(x+(j-2)*.8,7.2,z),({Color3.fromRGB(255,166,183),Color3.fromRGB(255,220,104),Color3.fromRGB(193,171,255)})[j],Enum.Material.Neon,Enum.PartType.Ball)
+        end
+    end
+end
+for i=1,8 do
+    local z=-78-math.floor((i-1)/2)*19
+    local x=(i%2==0 and 1 or -1)*11
+    scenicPart("FishingCrate",Vector3.new(2.6,2,2.6),Vector3.new(x,6,z),Color3.fromRGB(157,108,63),Enum.Material.WoodPlanks)
+    scenicPart("CrateTrim",Vector3.new(2.8,.3,2.8),Vector3.new(x,7.15,z),Color3.fromRGB(103,72,45),Enum.Material.Wood)
+end
 -- A little dockside detail and a lighthouse at the far end of the main island.
 for i=1,6 do
     scenicPart("PierBollard",Vector3.new(1.2,2,1.2),Vector3.new((i%2==0 and 1 or -1)*8.8,6.4,-76-math.floor((i-1)/2)*26),Color3.fromRGB(90,62,46),Enum.Material.Wood)
