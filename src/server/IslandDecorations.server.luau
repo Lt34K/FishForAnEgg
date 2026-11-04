@@ -65,6 +65,7 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     local function piece(name,size,offset,color,material)
         local p=block(name,size,Vector3.new(x,0,kind=="Luck" and 6 or -37)+offset,color,material)
         p.Parent=folder
+        p.CFrame=CFrame.new(x,0,kind=="Luck" and 6 or -37)*CFrame.Angles(0,math.rad(180),0)*CFrame.new(offset)
         return p
     end
     piece("Floor",Vector3.new(15,.6,12),Vector3.new(0,5.3,0),trim,Enum.Material.WoodPlanks)
