@@ -496,14 +496,17 @@ iconTile(gui,"🐟",UDim2.new(.5,-154,0,12),palette.blue)
 -- Compact responsive HUD: icons remain visible without dominating the camera.
 local UIS=game:GetService("UserInputService")
 local camera=workspace.CurrentCamera
-local hudScale=Instance.new("UIScale")
-hudScale.Name="ResponsiveHudScale"
-hudScale.Parent=gui
 local function fitHud()
     camera=workspace.CurrentCamera or camera
     if not camera then return end
     local width=camera.ViewportSize.X
-    hudScale.Scale=math.clamp(width/1500,.68,1)
+    local factor=math.clamp(width/1500,.72,1)
+    for _,button in ipairs({toggle,indexToggle,premiumToggle,luckToggle}) do
+        local scale=button:FindFirstChild("ResponsiveScale") or Instance.new("UIScale")
+        scale.Name="ResponsiveScale"
+        scale.Scale=factor
+        scale.Parent=button
+    end
 end
 fitHud()
 if camera then camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitHud) end
