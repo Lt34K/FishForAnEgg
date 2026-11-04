@@ -60,6 +60,40 @@ remote.OnServerEvent:Connect(function(player, action)
         bobber.Position = destination
         bobber.Parent = workspace
 
+        -- Impact ripple, droplets and a brief water splash when the float lands.
+        local splash=Instance.new("ParticleEmitter")
+        splash.Name="WaterSplash"
+        splash.Texture="rbxasset://textures/particles/sparkles_main.dds"
+        splash.Color=ColorSequence.new(Color3.fromRGB(207,247,255),Color3.fromRGB(91,196,238))
+        splash.Transparency=NumberSequence.new(0.15,1)
+        splash.Size=NumberSequence.new({
+            NumberSequenceKeypoint.new(0,.35),
+            NumberSequenceKeypoint.new(.6,.65),
+            NumberSequenceKeypoint.new(1,0)
+        })
+        splash.Speed=NumberRange.new(4,10)
+        splash.SpreadAngle=Vector2.new(110,110)
+        splash.Lifetime=NumberRange.new(.3,.65)
+        splash.Rate=0
+        splash.Parent=bobber
+        splash:Emit(24)
+        local ripple=Instance.new("Part")
+        ripple.Name="FishingRipple"
+        ripple.Shape=Enum.PartType.Cylinder
+        ripple.Size=Vector3.new(.08,2,2)
+        ripple.CFrame=CFrame.new(destination+Vector3.new(0,-.45,0))*CFrame.Angles(0,0,math.rad(90))
+        ripple.Color=Color3.fromRGB(208,250,255)
+        ripple.Material=Enum.Material.Neon
+        ripple.Transparency=.35
+        ripple.Anchored=true
+        ripple.CanCollide=false
+        ripple.Parent=workspace
+        local TweenService=game:GetService("TweenService")
+        TweenService:Create(ripple,TweenInfo.new(.8,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+            Size=Vector3.new(.08,8,8),
+            Transparency=1
+        }):Play()
+        Debris:AddItem(ripple,1)
         local tip = rod and rod:FindFirstChild("RodTip")
         if tip then
             local a = Instance.new("Attachment")
