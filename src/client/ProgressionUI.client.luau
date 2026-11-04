@@ -102,10 +102,12 @@ premiumFooter.TextWrapped=true
 local worldShop=ReplicatedStorage:WaitForChild("OpenWorldShop")
 worldShop.OnClientEvent:Connect(function(kind)
     if kind=="Rods" then
+        luckPanel.Visible=false
         premium.Visible=false
         indexPanel.Visible=false
         shop.Visible=true
     elseif kind=="Robux" then
+        luckPanel.Visible=false
         premium.Visible=true
         shop.Visible=false
         indexPanel.Visible=false
@@ -113,6 +115,39 @@ worldShop.OnClientEvent:Connect(function(kind)
 end)
 local decorButton=makeButton(shop,"BuyDecoration",UDim2.new(.04,0,0,275),UDim2.new(.92,0,0,48),"Décorations de base")
 decorButton.Activated:Connect(function() action:FireServer("BuyDecoration") end)
+
+local luckPanel=Instance.new("Frame")
+luckPanel.Name="LuckShop"
+luckPanel.AnchorPoint=Vector2.new(.5,.5)
+luckPanel.Position=UDim2.fromScale(.5,.5)
+luckPanel.Size=UDim2.new(.88,0,.76,0)
+luckPanel.BackgroundColor3=Color3.fromRGB(31,79,55)
+luckPanel.Visible=false
+luckPanel.Parent=gui
+Instance.new("UICorner",luckPanel).CornerRadius=UDim.new(0,12)
+local luckLimit=Instance.new("UISizeConstraint")
+luckLimit.MaxSize=Vector2.new(420,480)
+luckLimit.Parent=luckPanel
+makeLabel(luckPanel,"Title",UDim2.new(.04,0,.02,0),UDim2.new(.73,0,0,45),"🍀 BOOSTS DE CHANCE")
+local luckClose=makeButton(luckPanel,"Close",UDim2.new(.8,0,.02,0),UDim2.new(.16,0,0,45),"✕")
+luckClose.Activated:Connect(function() luckPanel.Visible=false end)
+local luckStatus=makeLabel(luckPanel,"Status",UDim2.new(.04,0,.15,0),UDim2.new(.92,0,0,55),"Chance normale")
+luckStatus.TextScaled=false
+luckStatus.TextSize=16
+local luckButtons={}
+for i=1,3 do
+    local b=makeButton(luckPanel,"Potion"..i,UDim2.new(.04,0,.3+(i-1)*.14,0),UDim2.new(.92,0,.115,0),"Potion "..i)
+    b.TextScaled=false
+    b.TextSize=16
+    b.TextWrapped=true
+    b.Activated:Connect(function() action:FireServer("BuyLuckPotion",i) end)
+    luckButtons[i]=b
+end
+local luckUpgrade=makeButton(luckPanel,"Upgrade",UDim2.new(.04,0,.75,0),UDim2.new(.92,0,.14,0),"Améliorer la chance permanente")
+luckUpgrade.TextScaled=false
+luckUpgrade.TextSize=16
+luckUpgrade.TextWrapped=true
+luckUpgrade.Activated:Connect(function() action:FireServer("BuyLuckUpgrade") end)
 local notice=makeLabel(gui,"Notice",UDim2.new(.5,-170,0,12),UDim2.fromOffset(340,48),"")
 notice.Visible=false
 
@@ -200,6 +235,13 @@ buyBase.Activated:Connect(function() action:FireServer("UpgradeBase") end)
 events.OnClientEvent:Connect(function(kind,payload)
     if kind=="State" then
         state=payload
+        for i,potion in ipairs(state.luckPotions or {}) do
+            if luckButtons[i] then luckButtons[i].Text=potion.name.." | +"..math.floor(potion.bonus*100).."% | "..math.floor(potion.duration/60).." min | "..fmt(potion.price).." $" end
+        end
+        local nextLuck=(state.luckUpgrades or {})[(state.luckLevel or 0)+1]
+        luckUpgrade.Text=nextLuck and ("🍀 Chance permanente +"..math.floor(nextLuck.bonus*100).."% : "..fmt(nextLuck.price).." $") or "🍀 Chance permanente : MAX"
+        local seconds=math.max(0,(state.luckExpires or 0)-os.time())
+        luckStatus.Text="🍀 Niveau "..(state.luckLevel or 0).." | "..(seconds>0 and (math.ceil(seconds/60).." min de boost") or "Boost inactif")
         cash.Text="💰 "..fmt(state.cash).." $"
         drawIndex(state)
         inventory.Text="🥚 "..#state.inventory.." / 30"
@@ -210,7 +252,8 @@ events.OnClientEvent:Connect(function(kind,payload)
         buyRod.Text=nextRod and ("Canne "..nextRod.name.." : "..fmt(nextRod.price).." $") or "Cannes : MAX"
         local nextPrice=state.baseCosts[state.base+1]
         baseInfo.Text="🏠 Niveau "..state.base.." | "..state.baseSlots[state.base].." emplacements"
-        local nextDecoration=(state.decorations or {})[(state.decorationLevel or 0)+1]\n        decorButton.Text=nextDecoration and ("🎨 "..nextDecoration.name.." : "..fmt(nextDecoration.price).." $") or "🎨 Décorations : MAX"
+        local nextDecoration=(state.decorations or {})[(state.decorationLevel or 0)+1]
+        decorButton.Text=nextDecoration and ("🎨 "..nextDecoration.name.." : "..fmt(nextDecoration.price).." $") or "🎨 Décorations : MAX"
         buyBase.Text=nextPrice and ("Agrandir : "..fmt(nextPrice).." $") or "Base : MAX"
     elseif kind=="Notice" then
         noticeId+=1
