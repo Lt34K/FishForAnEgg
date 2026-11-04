@@ -64,6 +64,34 @@ for i, position in ipairs(positions) do
     part("BaseBorder"..i, Vector3.new(44, 0.4, 35), CFrame.new(position - Vector3.new(0, 0.45, 0)), Color3.fromRGB(49, 107, 150), Enum.Material.SmoothPlastic, bases)
 end
 
+-- Soft coastal lighting, consistent across servers.
+local Lighting=game:GetService("Lighting")
+Lighting.ClockTime=15.3
+Lighting.Brightness=2.2
+Lighting.EnvironmentDiffuseScale=.55
+Lighting.EnvironmentSpecularScale=.6
+Lighting.Ambient=Color3.fromRGB(129,154,178)
+Lighting.OutdoorAmbient=Color3.fromRGB(167,185,195)
+local atmosphere=Lighting:FindFirstChild("FishCoastAtmosphere") or Instance.new("Atmosphere")
+atmosphere.Name="FishCoastAtmosphere"
+atmosphere.Density=.23
+atmosphere.Offset=.15
+atmosphere.Color=Color3.fromRGB(207,235,248)
+atmosphere.Decay=Color3.fromRGB(116,157,191)
+atmosphere.Haze=1.2
+atmosphere.Parent=Lighting
+-- Foam border and natural sand edge frame the island.
+for _,side in ipairs({-1,1}) do
+    local foam=part("ShoreFoam",Vector3.new(3,.2,148),CFrame.new(side*125,-4.4,0),Color3.fromRGB(197,245,248),Enum.Material.Neon)
+    foam.Transparency=.45
+    foam.CanCollide=false
+end
+for _,z in ipairs({-75,75}) do
+    local foam=part("ShoreFoam",Vector3.new(248,.2,3),CFrame.new(0,-4.4,z),Color3.fromRGB(197,245,248),Enum.Material.Neon)
+    foam.Transparency=.45
+    foam.CanCollide=false
+end
+
 -- Remove the template baseplate only when its default name matches.
 local baseplate = Workspace:FindFirstChild("Baseplate")
 if baseplate and baseplate:IsA("BasePart") then
