@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("FishingEvent")
@@ -58,6 +59,7 @@ fill.Parent = progress
 Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 10)
 
 local state = "idle"
+local noticeUntil = 0
 local actionButton=Instance.new("TextButton")
 actionButton.Name="FishAction"
 actionButton.AnchorPoint=Vector2.new(.5,1)
@@ -75,6 +77,11 @@ local stroke=Instance.new("UIStroke")
 stroke.Color=Color3.fromRGB(135,225,255)
 stroke.Thickness=2
 stroke.Parent=actionButton
+local function atFishingZone()
+    local character=player.Character
+    local root=character and character:FindFirstChild("HumanoidRootPart")
+    return root ~= nil and root.Position.Y>=3 and root.Position.Z < -62 and root.Position.Z > -156 and math.abs(root.Position.X)<12
+end
 local function equipped()
     if not player.Character then return false end
     for _,child in ipairs(player.Character:GetChildren()) do
@@ -88,14 +95,23 @@ task.spawn(function()
         local hasRod=equipped()
         status.Visible=hasRod
         actionButton.Visible=hasRod
-        actionButton.Text=state=="reeling" and "🥚 REMONTER !" or state=="waiting" and "⏳ ATTENDRE..." or "🎣 LANCER"
-        actionButton.Active=state~="waiting"
+        local atPier=atFishingZone()
+        actionButton.Text=state=="reeling" and "🥚 REMONTER !" or state=="waiting" and "⏳ ATTENDRE..." or atPier and "🎣 LANCER" or "📍 PONTON"
+        actionButton.Active=state=="reeling" or (state=="idle" and atPier)
+        if hasRod and state=="idle" and os.clock()>noticeUntil then
+            status.Text=atPier and "🎣 Prêt à pêcher ! Lance ta ligne." or "📍 Avance sur le ponton pour pêcher."
+        end
         if not hasRod then progress.Visible=false end
         task.wait(.35)
     end
 end)
 local function cast()
     if not equipped() then return end
+    if not atFishingZone() then
+        status.Text="📍 Rejoins le ponton, puis lance ta ligne !"
+        noticeUntil=os.clock()+2
+        return
+    end
     state = "waiting"
     status.Text = "🎣 Ligne lancée... attends une touche !"
     remote:FireServer("Cast")
@@ -131,20 +147,24 @@ end)
 remote.OnClientEvent:Connect(function(action, a, b)
     if action == "CastStarted" then
         status.Text = "🌊 Bouchon à l'eau... attends !"
+    elseif action == "Splash" then
+        status.Text = "💦 Plouf ! Observe le bouchon..."
     elseif action == "Bite" then
         state = "reeling"
         status.Text = "🥚 Un œuf mord ! Clique / tapote / R2 !"
         progress.Visible = true
         fill.Size = UDim2.fromScale(0, 1)
     elseif action == "Progress" then
-        fill.Size = UDim2.fromScale(math.clamp(a / b, 0, 1), 1)
+        TweenService:Create(fill,TweenInfo.new(.11,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.fromScale(math.clamp(a / b, 0, 1), 1)}):Play()
     elseif action == "Caught" then
         state = "idle"
         status.Text = "🎉 Tu as pêché : " .. tostring(a)
+        noticeUntil=os.clock()+3
         progress.Visible = false
     elseif action == "Message" then
         state = "idle"
         status.Text = tostring(a)
+        noticeUntil=os.clock()+3
         progress.Visible = false
     end
 end)
