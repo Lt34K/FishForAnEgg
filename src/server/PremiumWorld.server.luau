@@ -70,35 +70,35 @@ for _,v in ipairs({-1,1}) do
     part("PlazaStoneEdge",Vector3.new(31,.6,1),at(0,5.65,8+v*11),Color3.fromRGB(157,145,129),Enum.Material.Slate)
     part("PlazaStoneEdge",Vector3.new(1,.6,22),at(v*15,5.65,8),Color3.fromRGB(157,145,129),Enum.Material.Slate)
 end
-local pedestal=part("EggMonumentPlinth",Vector3.new(5,1.2,5),at(0,6.1,8),Color3.fromRGB(83,123,142),Enum.Material.Slate)
-local egg=part("GoldenEggMonument",Vector3.new(3.9,5,3.9),at(0,9.3,8),Color3.fromRGB(255,216,93),Enum.Material.Neon,"Ball")
-local accent=part("EggHalo",Vector3.new(.35,6.2,6.2),at(0,7.1,8)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(129,239,255),Enum.Material.Neon,"Cylinder")
+local pedestal=part("EggMonumentPlinth",Vector3.new(5,1.2,5),at(12,6.1,2),Color3.fromRGB(83,123,142),Enum.Material.Slate)
+local egg=part("GoldenEggMonument",Vector3.new(3.9,5,3.9),at(12,9.3,2),Color3.fromRGB(255,216,93),Enum.Material.Neon,"Ball")
+local accent=part("EggHalo",Vector3.new(.35,6.2,6.2),at(12,7.1,2)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(129,239,255),Enum.Material.Neon,"Cylinder")
 accent.Transparency=.45
 light(egg,Color3.fromRGB(255,206,103),24,1)
 -- The decorative ring is non-colliding, and paths remain open on both sides.
 for _,side in ipairs({-1,1}) do
     local x=side*11.4
-    part("VillageBenchSeat",Vector3.new(5,.45,1.8),at(x,6.2,8),wood,Enum.Material.WoodPlanks)
-    part("VillageBenchBack",Vector3.new(5,2,.4),at(x,7,9),Color3.fromRGB(147,97,65),Enum.Material.Wood)
+    part("VillageBenchSeat",Vector3.new(5,.45,1.8),at(x,6.2,15),wood,Enum.Material.WoodPlanks)
+    part("VillageBenchBack",Vector3.new(5,2,.4),at(x,7,16),Color3.fromRGB(147,97,65),Enum.Material.Wood)
     for _,dx in ipairs({-2.1,2.1}) do
-        part("VillageBenchLeg",Vector3.new(.5,1.4,.5),at(x+dx,5.7,8),navy,Enum.Material.Metal)
+        part("VillageBenchLeg",Vector3.new(.5,1.4,.5),at(x+dx,5.7,15),navy,Enum.Material.Metal)
     end
 end
 -- A genuinely readable portal that announces the fishing area.
 for _,side in ipairs({-1,1}) do
-    local x=side*11
+    local x=-18+side*11
     part("FishingGatePillar",Vector3.new(2.2,10,2.2),at(x,10,-58),wood,Enum.Material.WoodPlanks)
     local cap=part("FishingGateCap",Vector3.new(3.1,1.1,3.1),at(x,15.1,-58),gold,Enum.Material.SmoothPlastic)
     light(cap,gold,12,.7)
 end
-local entrySign=part("FishingGateSign",Vector3.new(19,3,.8),at(0,15.1,-58)*CFrame.Angles(0,math.rad(180),0),navy,Enum.Material.SmoothPlastic)
+local entrySign=part("FishingGateSign",Vector3.new(19,3,.8),at(-18,15.1,-58)*CFrame.Angles(0,math.rad(180),0),navy,Enum.Material.SmoothPlastic)
 part("FishingGateSignTrim",Vector3.new(20,3.8,.2),at(0,15.1,-57.45),gold,Enum.Material.Neon)
 labelOnFace(entrySign,"PONTON DE PECHE",cream)
 -- Striping, roof contours, display objects and beautifully lit signs on each stand.
 local shops={
-    {kind="Rods",x=-36,z=-37,tint=Color3.fromRGB(56,165,221),icon="FISHING RODS"},
-    {kind="Robux",x=36,z=-37,tint=Color3.fromRGB(172,108,255),icon="VIP SHOP"},
-    {kind="Luck",x=34,z=6,tint=Color3.fromRGB(72,218,126),icon="LUCK BOOSTS"},
+    {kind="Rods",x=-36,z=-12,tint=Color3.fromRGB(56,165,221),icon="FISHING RODS"},
+    {kind="Robux",x=0,z=-12,tint=Color3.fromRGB(172,108,255),icon="VIP SHOP"},
+    {kind="Luck",x=36,z=-12,tint=Color3.fromRGB(72,218,126),icon="LUCK BOOSTS"},
 }
 for _,shop in ipairs(shops) do
     local m=islandDecor:WaitForChild(shop.kind.."Stand",20)
