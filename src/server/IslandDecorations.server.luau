@@ -75,6 +75,29 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     end
     piece("Roof",Vector3.new(16,1,13),Vector3.new(0,12.8,0),primary,Enum.Material.SmoothPlastic)
     piece("RoofStripe",Vector3.new(16,.35,1.2),Vector3.new(0,13.4,-5.7),trim,Enum.Material.Neon)
+    -- Layered striped canopy, fascia lights and shop window details.
+    for stripe=1,8 do
+        local shade=stripe%2==0 and trim or Color3.fromRGB(245,240,220)
+        piece("AwningStripe"..stripe,Vector3.new(1.9,.22,3.6),Vector3.new(-7.1+(stripe-.5)*1.8,10.5,-5.7),shade,Enum.Material.Fabric)
+    end
+    piece("AwningFrame",Vector3.new(15.8,.4,.55),Vector3.new(0,10.35,-7.4),primary,Enum.Material.Wood)
+    for _,side in ipairs({-1,1}) do
+        piece("LanternBracket",Vector3.new(.35,.35,1.4),Vector3.new(side*7.4,10.1,-5.4),Color3.fromRGB(90,61,44),Enum.Material.Metal)
+        local lantern=piece("WarmLantern",Vector3.new(.9,1.3,.9),Vector3.new(side*7.4,9.1,-6),Color3.fromRGB(255,213,112),Enum.Material.Neon)
+        local glow=Instance.new("PointLight")
+        glow.Range=12
+        glow.Brightness=.65
+        glow.Parent=lantern
+    end
+    piece("BackWall",Vector3.new(13.8,5.5,.7),Vector3.new(0,8.5,4.7),Color3.fromRGB(126,85,56),Enum.Material.WoodPlanks)
+    for i=1,3 do
+        piece("Shelf"..i,Vector3.new(10,.3,1.3),Vector3.new(0,6.7+i*1.15,3.65),Color3.fromRGB(182,128,76),Enum.Material.Wood)
+    end
+    for i=1,4 do
+        local color=kind=="Rods" and Color3.fromRGB(89,191,248) or kind=="Robux" and Color3.fromRGB(206,106,255) or Color3.fromRGB(116,246,138)
+        local vial=piece("DisplayItem"..i,Vector3.new(.8,1.1,.8),Vector3.new((i-2.5)*2.2,8.2,3.3),color,Enum.Material.Neon)
+        vial.Shape=Enum.PartType.Ball
+    end
     local counter=piece("Counter",Vector3.new(11,2,2),Vector3.new(0,6.8,-3.6),primary,Enum.Material.Wood)
     piece("CounterTop",Vector3.new(12,.3,2.7),Vector3.new(0,7.95,-3.6),trim,Enum.Material.SmoothPlastic)
     local sign=piece("ShopSign",Vector3.new(12,2.7,.5),Vector3.new(0,11.2,-5.1),primary,Enum.Material.SmoothPlastic)
