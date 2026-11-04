@@ -96,9 +96,9 @@ part("FishingGateSignTrim",Vector3.new(20,3.8,.2),at(-18,15.1,-57.45),gold,Enum.
 labelOnFace(entrySign,"PONTON DE PECHE",cream)
 -- Striping, roof contours, display objects and beautifully lit signs on each stand.
 local shops={
-    {kind="Rods",x=-36,z=-12,tint=Color3.fromRGB(56,165,221),icon="FISHING RODS"},
-    {kind="Robux",x=0,z=-12,tint=Color3.fromRGB(172,108,255),icon="VIP SHOP"},
-    {kind="Luck",x=36,z=-12,tint=Color3.fromRGB(72,218,126),icon="LUCK BOOSTS"},
+    {kind="Rods",x=-36,z=-12,tint=Color3.fromRGB(56,165,221),icon="BOUTIQUE CANNES"},
+    {kind="Robux",x=0,z=-12,tint=Color3.fromRGB(172,108,255),icon="BOUTIQUE ROBUX"},
+    {kind="Luck",x=36,z=-12,tint=Color3.fromRGB(72,218,126),icon="BOOSTS DE CHANCE"},
 }
 for _,shop in ipairs(shops) do
     local m=islandDecor:WaitForChild(shop.kind.."Stand",20)
