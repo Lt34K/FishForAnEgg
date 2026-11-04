@@ -282,6 +282,18 @@ for _,z in ipairs({-22,24}) do
         scenicPart("BenchBack",Vector3.new(5,2,.4),Vector3.new(side*19,7,z+1),Color3.fromRGB(119,79,49),Enum.Material.Wood)
     end
 end
+-- Village promenade lanterns
+for _,z in ipairs({-48,-30,-12,8,26,44}) do
+    for _,side in ipairs({-1,1}) do
+        local x=side*11
+        scenicPart("VillagePost",Vector3.new(.45,3.5,.45),Vector3.new(x,7,z),Color3.fromRGB(93,61,45),Enum.Material.Wood)
+        local lamp=scenicPart("VillageLantern",Vector3.new(1.1,1.4,1.1),Vector3.new(x,9,z),Color3.fromRGB(255,211,112),Enum.Material.Neon)
+        local light=Instance.new("PointLight")
+        light.Range=13
+        light.Brightness=.8
+        light.Parent=lamp
+    end
+end
 -- A little dockside detail and a lighthouse at the far end of the main island.
 for i=1,6 do
     scenicPart("PierBollard",Vector3.new(1.2,2,1.2),Vector3.new((i%2==0 and 1 or -1)*8.8,6.4,-76-math.floor((i-1)/2)*26),Color3.fromRGB(90,62,46),Enum.Material.Wood)
