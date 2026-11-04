@@ -82,22 +82,26 @@ local premiumTitle=makeLabel(premium,"Title",UDim2.new(.04,0,.025,0),UDim2.new(.
 premiumTitle.BackgroundColor3=Color3.fromRGB(76,61,146)
 local closePremium=makeButton(premium,"Close",UDim2.new(.8,0,.025,0),UDim2.new(.16,0,0,48),"✕")
 closePremium.Activated:Connect(function() premium.Visible=false end)
-local premiumItems={
-    {"🎣 Canne exclusive","Objet cosmétique premium"},
-    {"⚡ Éclosion rapide","Bonus de confort"},
-    {"🎨 Skin de base VIP","Personnalisation exclusive"},
-    {"🥚 Emplacements bonus","Plus de place pour collectionner"},
-}
-for i,item in ipairs(premiumItems) do
-    local card=makeLabel(premium,"Premium"..i,UDim2.new(.05,0,.17+(i-1)*.17,0),UDim2.new(.9,0,.145,0),item[1].."\n"..item[2])
-    card.TextScaled=false
-    card.TextSize=17
-    card.TextWrapped=true
-    card.BackgroundColor3=Color3.fromRGB(63,54,115)
+local MarketplaceService=game:GetService("MarketplaceService")
+local premiumButtons={}
+local productNames={"🥚 Œuf cosmique divin","🎣 Canne stellaire exclusive","🍀 Chance VIP ×2 · 30 min","💰 Coffre de 100 000 $"}
+for i,name in ipairs(productNames) do
+    local button=makeButton(premium,"Premium"..i,UDim2.new(.05,0,.17+(i-1)*.17,0),UDim2.new(.9,0,.145,0),name)
+    button.TextScaled=false
+    button.TextSize=17
+    button.TextWrapped=true
+    button.BackgroundColor3=Color3.fromRGB(63,54,115)
+    button.Activated:Connect(function()
+        local item=state and state.premiumProducts and state.premiumProducts[i]
+        if item and tonumber(item.productId) and item.productId>0 then
+            MarketplaceService:PromptProductPurchase(player,item.productId)
+        end
+    end)
+    premiumButtons[i]=button
 end
-local premiumFooter=makeLabel(premium,"Footer",UDim2.new(.05,0,.87,0),UDim2.new(.9,0,.1,0),"Achats bientôt disponibles")
+local premiumFooter=makeLabel(premium,"Footer",UDim2.new(.05,0,.87,0),UDim2.new(.9,0,.1,0),"Produits désactivés tant que les IDs Roblox ne sont pas configurés")
 premiumFooter.TextScaled=false
-premiumFooter.TextSize=15
+premiumFooter.TextSize=14
 premiumFooter.TextWrapped=true
 
 local luckPanel=Instance.new("Frame")
@@ -241,6 +245,13 @@ buyBase.Activated:Connect(function() action:FireServer("UpgradeBase") end)
 events.OnClientEvent:Connect(function(kind,payload)
     if kind=="State" then
         state=payload
+        for i,button in ipairs(premiumButtons) do
+            local product=state.premiumProducts and state.premiumProducts[i]
+            local enabled=product and tonumber(product.productId) and product.productId>0
+            button.Text=productNames[i]..(enabled and "" or " · À VENIR")
+            button.BackgroundColor3=enabled and Color3.fromRGB(100,70,171) or Color3.fromRGB(63,54,115)
+            button.Active=enabled and true or false
+        end
         for i,potion in ipairs(state.luckPotions or {}) do
             if luckButtons[i] then luckButtons[i].Text=potion.name.." | +"..math.floor(potion.bonus*100).."% | "..math.floor(potion.duration/60).." min | "..fmt(potion.price).." $" end
         end
