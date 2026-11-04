@@ -141,8 +141,9 @@ local function createEggOrCreature(parent,entry,config,position)
     local isBird=(entry.egg==2 and variant==5) or (entry.egg==6 and variant==1)
     local isReptile=(entry.egg==4 or (entry.egg==3 and (variant==3 or variant==5)))
     local longBody=(entry.egg==3 and variant==4) or (entry.egg==5 and variant>=3)
-    local body=ornament(holder,"Body",entry.hatched and (longBody and Vector3.new(3.7,1.65,2.2) or Vector3.new(2.8,2.25,2.15)) or Vector3.new(2.3,3,2.3),center,color,Enum.PartType.Ball,Enum.Material.SmoothPlastic)
+    local body=ornament(holder,"Body",entry.hatched and (longBody and Vector3.new(3.7,1.65,2.2) or Vector3.new(2.8,2.25,2.15)) or Vector3.new(2.3,3,2.3),center,color,entry.hatched and Enum.PartType.Block or Enum.PartType.Ball,Enum.Material.SmoothPlastic)
     if entry.hatched then
+        -- Cubic collectible pets: sharp silhouettes and bright readable faces.
         if variant>=7 then
             body.Material=Enum.Material.Neon
             local light=Instance.new("PointLight")
@@ -162,18 +163,18 @@ local function createEggOrCreature(parent,entry,config,position)
             sparkle.Parent=body
         end
         local head=center+Vector3.new(0,.55,-.95)
-        ornament(holder,"Head",Vector3.new(1.6,1.45,1.35),head,color,Enum.PartType.Ball)
+        ornament(holder,"Head",Vector3.new(1.6,1.45,1.35),head,color,Enum.PartType.Block)
         for _,side in ipairs({-1,1}) do
-            local eye=head+Vector3.new(side*.43,.23,-.61)
-            ornament(holder,"Eye",Vector3.new(.32,.37,.22),eye,Color3.new(1,1,1),Enum.PartType.Ball)
-            ornament(holder,"Pupil",Vector3.new(.16,.2,.12),eye+Vector3.new(0,0,-.13),Color3.fromRGB(22,28,39),Enum.PartType.Ball)
+            local eye=head+Vector3.new(side*.43,.23,-.7)
+            ornament(holder,"Eye",Vector3.new(.32,.37,.22),eye,Color3.new(1,1,1),Enum.PartType.Block)
+            ornament(holder,"Pupil",Vector3.new(.16,.2,.12),eye+Vector3.new(0,0,-.13),Color3.fromRGB(22,28,39),Enum.PartType.Block)
             if isOcean then
                 local fin=ornament(holder,"Flipper",Vector3.new(1.2,.24,.65),center+Vector3.new(side*1.45,-.35,.2),color)
                 fin.Orientation=Vector3.new(0,0,side*18)
             elseif isBird then
-                ornament(holder,"Wing",Vector3.new(.55,1.3,.95),center+Vector3.new(side*1.25,0,.1),color,Enum.PartType.Ball)
+                ornament(holder,"Wing",Vector3.new(.55,1.3,.95),center+Vector3.new(side*1.25,0,.1),color,Enum.PartType.Block)
             else
-                ornament(holder,"Leg",Vector3.new(.65,.85,.8),center+Vector3.new(side*.85,-1.05,-.35),color,Enum.PartType.Ball)
+                ornament(holder,"Leg",Vector3.new(.65,.85,.8),center+Vector3.new(side*.85,-1.05,-.35),color,Enum.PartType.Block)
             end
         end
         if isReptile then
@@ -190,14 +191,14 @@ local function createEggOrCreature(parent,entry,config,position)
             local ears=(entry.egg==1 and (variant==1 or variant==2 or variant==5)) or (entry.egg==3 and variant==1) or (entry.egg==6 and (variant==3 or variant==5))
             if ears then
                 for _,side in ipairs({-1,1}) do
-                    ornament(holder,"Ear",Vector3.new(.48,.95,.42),head+Vector3.new(side*.55,.88,.15),color,Enum.PartType.Ball)
+                    ornament(holder,"Ear",Vector3.new(.48,.95,.42),head+Vector3.new(side*.55,.88,.15),color,Enum.PartType.Block)
                 end
             end
-            ornament(holder,"Nose",Vector3.new(.35,.25,.22),head+Vector3.new(0,-.17,-.75),Color3.fromRGB(50,48,50),Enum.PartType.Ball)
+            ornament(holder,"Nose",Vector3.new(.35,.25,.22),head+Vector3.new(0,-.17,-.75),Color3.fromRGB(50,48,50),Enum.PartType.Block)
         end
         -- Recognizable silhouettes: every habitat gets distinctive species features.
         local function detail(name,size,offset,tint,shape)
-            return ornament(holder,name,size,center+offset,tint or color,shape or Enum.PartType.Ball)
+            return ornament(holder,name,size,center+offset,tint or color,shape or Enum.PartType.Block)
         end
         if entry.egg==1 then
             if variant==1 then -- Rabbit: long ears and fluffy tail
