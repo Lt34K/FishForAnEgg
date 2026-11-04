@@ -145,6 +145,11 @@ worldShop.OnClientEvent:Connect(function(kind)
         premium.Visible=true
         shop.Visible=false
         indexPanel.Visible=false
+    elseif kind=="Luck" then
+        luckPanel.Visible=true
+        premium.Visible=false
+        shop.Visible=false
+        indexPanel.Visible=false
     end
 end)
 local decorButton=makeButton(shop,"BuyDecoration",UDim2.new(.04,0,0,275),UDim2.new(.92,0,0,48),"Décorations de base")
