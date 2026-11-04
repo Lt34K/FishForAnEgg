@@ -145,6 +145,43 @@ for _,shop in ipairs(shops) do
         entrance.Transparency=.2
     end
 end
+-- Six upgraded base exteriors: every island plot reads as a collectible zone.
+local plots=world:WaitForChild("BasePlots",20)
+if plots then
+    local colors={
+        Color3.fromRGB(92,218,245),Color3.fromRGB(255,195,99),
+        Color3.fromRGB(184,126,248),Color3.fromRGB(107,236,151),
+        Color3.fromRGB(255,146,173),Color3.fromRGB(121,201,255)
+    }
+    for i=1,6 do
+        local pad=plots:FindFirstChild("Base"..i)
+        if pad then
+            local x,z=pad.Position.X,pad.Position.Z
+            local tint=colors[i]
+            for _,sx in ipairs({-1,1}) do
+                for _,sz in ipairs({-1,1}) do
+                    local px,pz=x+sx*21.5,z+sz*17.2
+                    part("BaseCornerStone",Vector3.new(2.5,2.6,2.5),at(px,6.55,pz),Color3.fromRGB(90,113,127),Enum.Material.Slate)
+                    local cap=part("BaseCrystalCap",Vector3.new(1.8,.7,1.8),at(px,8.2,pz),tint,Enum.Material.Neon)
+                    light(cap,tint,10,.36)
+                end
+                local rail=part("BaseSideLight",Vector3.new(.36,.27,28),at(x+sx*21.7,5.9,z),tint,Enum.Material.Neon)
+                rail.Transparency=.25
+            end
+            for _,sz in ipairs({-1,1}) do
+                local front=part("BaseEdgeLight",Vector3.new(39,.26,.36),at(x,5.9,z+sz*17.1),tint,Enum.Material.Neon)
+                front.Transparency=.27
+            end
+            -- Side-set totems leave all current animal slots unobstructed.
+            for _,sx in ipairs({-1,1}) do
+                local cx=x+sx*20
+                part("PlotTotemBody",Vector3.new(1.4,3.4,1.4),at(cx,7.7,z),Color3.fromRGB(76,102,119),Enum.Material.Slate)
+                local jewel=part("PlotTotemJewel",Vector3.new(1.7,1.7,1.7),at(cx,10,z),tint,Enum.Material.Neon,"Ball")
+                light(jewel,tint,12,.32)
+            end
+        end
+    end
+end
 -- Teal shallow-water ribbons make a visual transition from island to ocean.
 for _,side in ipairs({-1,1}) do
     for _,z in ipairs({-54,-33,-12,9,30,51}) do
