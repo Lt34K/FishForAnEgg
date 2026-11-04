@@ -44,6 +44,18 @@ Config.Creatures = {
 }
 Config.CreatureRarities = {"Commun", "Commun", "Peu commun", "Rare", "Rare", "Épique", "Légendaire", "Divin"}
 Config.CreatureWeights = {35,25,16,10,7,4,2,1}
+Config.LuckPotions = {
+    {name="Potion de chance",price=10000,duration=600,bonus=.25},
+    {name="Fer à cheval doré",price=250000,duration=900,bonus=.5},
+    {name="Cristal mystique",price=5000000,duration=1200,bonus=1},
+}
+Config.LuckUpgrades = {
+    {price=5000,bonus=.1},
+    {price=50000,bonus=.2},
+    {price=500000,bonus=.35},
+    {price=5000000,bonus=.5},
+    {price=50000000,bonus=.75},
+}
 Config.CreatureIncomeMultipliers = {1,1,1.5,2,3,5,10,25}
 Config.BaseDecorations = {
     {name="Jardinières",price=1500,color=Color3.fromRGB(69,177,96)},
