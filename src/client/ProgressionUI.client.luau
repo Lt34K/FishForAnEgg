@@ -53,13 +53,13 @@ local shop=Instance.new("Frame")
 shop.Name="Shop"
 shop.AnchorPoint=Vector2.new(1,0)
 shop.Position=UDim2.new(1,-12,0,68)
-shop.Size=UDim2.new(.85,0,0,270)
+shop.Size=UDim2.new(.85,0,0,340)
 shop.BackgroundColor3=Color3.fromRGB(23,47,65)
 shop.Visible=false
 shop.Parent=gui
 Instance.new("UICorner",shop).CornerRadius=UDim.new(0,12)
 local sizeLimit=Instance.new("UISizeConstraint")
-sizeLimit.MaxSize=Vector2.new(360,270)
+sizeLimit.MaxSize=Vector2.new(360,340)
 sizeLimit.Parent=shop
 local rodInfo=makeLabel(shop,"RodInfo",UDim2.new(.04,0,.04,0),UDim2.new(.92,0,0,70),"Canne actuelle : Bois")
 local buyRod=makeButton(shop,"BuyRod",UDim2.new(.04,0,.33,0),UDim2.new(.92,0,0,52),"Acheter la prochaine canne")
@@ -111,6 +111,8 @@ worldShop.OnClientEvent:Connect(function(kind)
         indexPanel.Visible=false
     end
 end)
+local decorButton=makeButton(shop,"BuyDecoration",UDim2.new(.04,0,0,275),UDim2.new(.92,0,0,48),"Décorations de base")
+decorButton.Activated:Connect(function() action:FireServer("BuyDecoration") end)
 local notice=makeLabel(gui,"Notice",UDim2.new(.5,-170,0,12),UDim2.fromOffset(340,48),"")
 notice.Visible=false
 
@@ -207,7 +209,7 @@ events.OnClientEvent:Connect(function(kind,payload)
         local nextRod=state.rods[state.rod+1]
         buyRod.Text=nextRod and ("Canne "..nextRod.name.." : "..fmt(nextRod.price).." $") or "Cannes : MAX"
         local nextPrice=state.baseCosts[state.base+1]
-        baseInfo.Text="🏠 Niveau "..state.base.." | "..state.baseSlots[state.base].." emplacements"
+        baseInfo.Text="🏠 Niveau "..state.base.." | "..state.baseSlots[state.base].." emplacements"\n        local nextDecoration=(state.decorations or {})[(state.decorationLevel or 0)+1]\n        decorButton.Text=nextDecoration and ("🎨 "..nextDecoration.name.." : "..fmt(nextDecoration.price).." $") or "🎨 Décorations : MAX"
         buyBase.Text=nextPrice and ("Agrandir : "..fmt(nextPrice).." $") or "Base : MAX"
     elseif kind=="Notice" then
         noticeId+=1
