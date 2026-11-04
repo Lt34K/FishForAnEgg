@@ -24,7 +24,7 @@ local function onPier(player)
     local character=player.Character
     local root=character and character:FindFirstChild("HumanoidRootPart")
     return root and root.Position.Y>=3 and root.Position.Z < -62
-        and root.Position.Z > -156 and math.abs(root.Position.X)<12
+        and root.Position.Z > -156 and math.abs(root.Position.X+18)<12
 end
 local function stop(player)
     local s=sessions[player]
@@ -136,8 +136,8 @@ local function beginCast(player)
     local start=(tip and tip:IsA("BasePart")) and tip.Position or root.Position+Vector3.new(0,2,0)
     local range=math.clamp(tonumber(rod:GetAttribute("CastDistance")) or 10,10,330)
     -- Always cast beside the pier, never through its wooden deck.
-    local direction=root.Position.X>=0 and 1 or -1
-    local destination=Vector3.new(direction*(21+range*.66),-3.15,math.clamp(root.Position.Z-10-range*.38,-340,-90))
+    local direction=root.Position.X>=-18 and 1 or -1
+    local destination=Vector3.new(-18+direction*(21+range*.66),-3.15,math.clamp(root.Position.Z-10-range*.38,-340,-90))
     local bobber,attachment=spawnFloat(player,rod,start,destination)
     local s={bobber=bobber,lineStart=attachment,ready=false,taps=0,needed=math.random(8,15),lastTap=0,rodLevel=rod:GetAttribute("RodLevel") or 1}
     sessions[player]=s
