@@ -47,6 +47,9 @@
           },
           "WorldAmbient": {
             "$path": "src/client/WorldAmbient.client.luau"
+          },
+          "PremiumHUD": {
+            "$path": "src/client/PremiumHUD.client.luau"
           }
         }
       }
