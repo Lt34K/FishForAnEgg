@@ -581,6 +581,34 @@ cardAccent(buyRod,Color3.fromRGB(95,205,255))
 cardAccent(buyBase,Color3.fromRGB(255,197,91))
 cardAccent(decorButton,Color3.fromRGB(173,134,248))
 
+-- Modal close controls remain reachable even when the navigation is obscured.
+local closeRodShop=makeButton(shop,"CloseRodShop",UDim2.new(1,-48,0,12),UDim2.fromOffset(36,36),"✕")
+closeRodShop.TextScaled=false
+closeRodShop.TextSize=20
+closeRodShop.ZIndex=8
+polish(closeRodShop,palette.purple)
+closeRodShop.Activated:Connect(function() shop.Visible=false end)
+layout.SortOrder=Enum.SortOrder.LayoutOrder
+local indexCloseRow=Instance.new("Frame")
+indexCloseRow.Name="IndexCloseRow"
+indexCloseRow.LayoutOrder=-100
+indexCloseRow.Size=UDim2.new(1,-12,0,41)
+indexCloseRow.BackgroundTransparency=1
+indexCloseRow.Parent=indexPanel
+local closeIndex=makeButton(indexCloseRow,"CloseIndex",UDim2.new(1,-47,0,2),UDim2.fromOffset(40,36),"✕")
+closeIndex.TextScaled=false
+closeIndex.TextSize=20
+polish(closeIndex,palette.purple)
+closeIndex.Activated:Connect(function() indexPanel.Visible=false end)
+toggle.Activated:Connect(function()
+    premium.Visible=false
+    luckPanel.Visible=false
+end)
+indexToggle.Activated:Connect(function()
+    premium.Visible=false
+    luckPanel.Visible=false
+end)
+
 action:FireServer("Sync")
 
 task.spawn(function()
