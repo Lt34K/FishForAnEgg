@@ -114,6 +114,27 @@ remote.OnServerEvent:Connect(function(player, action)
             Debris:AddItem(a, 30)
         end
 
+        local glow=Instance.new("PointLight")
+        glow.Name="FishingFloatGlow"
+        glow.Color=Color3.fromRGB(255,121,83)
+        glow.Range=7
+        glow.Brightness=.8
+        glow.Parent=bobber
+        local bobTween=TweenService:Create(bobber,TweenInfo.new(.8,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),{
+            Position=destination+Vector3.new(0,.4,0)
+        })
+        bobTween:Play()
+        local function makeBiteSplash()
+            if not bobber.Parent then return end
+            splash:Emit(12)
+            local pulse=Instance.new("Highlight")
+            pulse.Name="BiteHighlight"
+            pulse.FillColor=Color3.fromRGB(255,219,73)
+            pulse.FillTransparency=.45
+            pulse.OutlineColor=Color3.fromRGB(255,255,255)
+            pulse.Parent=bobber
+            Debris:AddItem(pulse,1)
+        end
         local s = {started = os.clock(), taps = 0, needed = math.random(8, 16), lastTap = 0, bobber = bobber, ready = false, rodLevel = level}
         sessions[player] = s
         remote:FireClient(player, "CastStarted")
@@ -125,6 +146,7 @@ remote.OnServerEvent:Connect(function(player, action)
                 return
             end
             s.ready = true
+            makeBiteSplash()
             remote:FireClient(player, "Bite", s.needed)
         end)
         task.delay(25, function()
