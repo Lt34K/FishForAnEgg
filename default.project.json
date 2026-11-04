@@ -6,8 +6,23 @@
       "$className": "ServerScriptService",
       "$ignoreUnknownInstances": true,
       "FishServer": {
-        "$path": "src/server",
-        "$ignoreUnknownInstances": true
+        "$className": "Folder",
+        "$ignoreUnknownInstances": true,
+        "GameConfig": {
+          "$path": "src/server/GameConfig.module.luau"
+        },
+        "Progression": {
+          "$path": "src/server/Progression.server.luau"
+        },
+        "Fishing": {
+          "$path": "src/server/Fishing.server.luau"
+        },
+        "WorldBuilder": {
+          "$path": "src/server/WorldBuilder.server.luau"
+        },
+        "IslandDecorations": {
+          "$path": "src/server/IslandDecorations.server.luau"
+        }
       }
     },
     "StarterPlayer": {
@@ -16,8 +31,14 @@
         "$className": "StarterPlayerScripts",
         "$ignoreUnknownInstances": true,
         "FishClient": {
-          "$path": "src/client",
-          "$ignoreUnknownInstances": true
+          "$className": "Folder",
+          "$ignoreUnknownInstances": true,
+          "FishingUI": {
+            "$path": "src/client/FishingUI.client.luau"
+          },
+          "ProgressionUI": {
+            "$path": "src/client/ProgressionUI.client.luau"
+          }
         }
       }
     }
