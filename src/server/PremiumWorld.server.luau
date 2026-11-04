@@ -224,20 +224,7 @@ for i=1,48 do
         end
     end
 end
--- Gentle post-processing: stronger color separation without overexposing UI.
-local Lighting=game:GetService("Lighting")
-local bloom=Lighting:FindFirstChild("FishPremiumBloom") or Instance.new("BloomEffect")
-bloom.Name="FishPremiumBloom"
-bloom.Intensity=.16
-bloom.Size=23
-bloom.Threshold=1.55
-bloom.Parent=Lighting
-local grade=Lighting:FindFirstChild("FishPremiumGrade") or Instance.new("ColorCorrectionEffect")
-grade.Name="FishPremiumGrade"
-grade.Saturation=.07
-grade.Contrast=.045
-grade.Brightness=.005
-grade.Parent=Lighting
+-- Lighting/post-processing is handled by CoastalPremium to avoid stacked effects.
 -- Distant seabirds frame the horizon and can be softly animated client-side.
 for i=1,6 do
     local x=(i-3.5)*35
