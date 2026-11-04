@@ -521,6 +521,42 @@ task.delay(10,function()
     if help.Parent then help:Destroy() end
 end)
 
+-- Product-card treatment inspired by polished Roblox simulator shops.
+local function cardAccent(button,color,icon)
+    local shadow=Instance.new("Frame")
+    shadow.Name="CardShadow"
+    shadow.AnchorPoint=Vector2.new(.5,.5)
+    shadow.Position=UDim2.fromScale(.5,.56)
+    shadow.Size=UDim2.fromScale(1,.98)
+    shadow.BackgroundColor3=Color3.fromRGB(7,18,35)
+    shadow.BackgroundTransparency=.55
+    shadow.ZIndex=button.ZIndex-1
+    shadow.Parent=button
+    Instance.new("UICorner",shadow).CornerRadius=UDim.new(0,12)
+    local strip=Instance.new("Frame")
+    strip.Name="AccentStrip"
+    strip.Size=UDim2.new(0,5,1,-12)
+    strip.Position=UDim2.fromOffset(7,6)
+    strip.BackgroundColor3=color
+    strip.BorderSizePixel=0
+    strip.ZIndex=button.ZIndex+1
+    strip.Parent=button
+    Instance.new("UICorner",strip).CornerRadius=UDim.new(1,0)
+    button.TextXAlignment=Enum.TextXAlignment.Center
+    button.TextColor3=Color3.fromRGB(252,249,240)
+    button.Font=Enum.Font.GothamBold
+end
+for i,button in ipairs(premiumButtons) do
+    cardAccent(button,({Color3.fromRGB(255,194,80),Color3.fromRGB(102,214,250),Color3.fromRGB(105,245,157),Color3.fromRGB(245,179,83)})[i])
+end
+for i,button in ipairs(luckButtons) do
+    cardAccent(button,Color3.fromRGB(95,239,149))
+end
+cardAccent(luckUpgrade,Color3.fromRGB(252,196,81))
+cardAccent(buyRod,Color3.fromRGB(95,205,255))
+cardAccent(buyBase,Color3.fromRGB(255,197,91))
+cardAccent(decorButton,Color3.fromRGB(173,134,248))
+
 action:FireServer("Sync")
 
 task.spawn(function()
