@@ -178,20 +178,40 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     prompt.Triggered:Connect(function(player)
         shopOpen:FireClient(player,kind)
     end)
-    -- Small themed items make the stands recognizable from the path.
+    -- Product showcases must read clearly at a distance, not as generic cubes.
     if kind=="Rods" then
         for i=1,3 do
-            local rod=piece("DisplayRod"..i,Vector3.new(.22,4,.22),Vector3.new((i-2)*2.5,9,-2.5),Color3.fromRGB(201,155,81),Enum.Material.Wood)
-            rod.Orientation=Vector3.new(0,0,18)
+            local x=(i-2)*2.7
+            local shaft=piece("FishingRod"..i,Vector3.new(.2,4.5,.2),Vector3.new(x,9.8,-2.6),Color3.fromRGB(208,159,87),Enum.Material.Wood)
+            shaft.CFrame=shaft.CFrame*CFrame.Angles(0,0,math.rad(19))
+            piece("RodGrip"..i,Vector3.new(.36,.9,.36),Vector3.new(x-.55,8.25,-2.6),Color3.fromRGB(78,55,46),Enum.Material.Wood)
+            local reel=piece("RodReel"..i,Vector3.new(.75,.75,.75),Vector3.new(x-.35,8.8,-2.5),Color3.fromRGB(126,190,208),Enum.Material.Metal)
+            reel.Shape=Enum.PartType.Ball
+        end
+    elseif kind=="Luck" then
+        for i=1,4 do
+            local x=(i-2.5)*2.5
+            local potion=piece("LuckBottle"..i,Vector3.new(1.55,.95,.95),Vector3.new(x,9,-2.7),Color3.fromRGB(65+i*20,255,131),Enum.Material.Glass)
+            potion.Shape=Enum.PartType.Cylinder
+            potion.CFrame=potion.CFrame*CFrame.Angles(0,0,math.rad(90))
+            potion.Transparency=.15
+            piece("PotionCork"..i,Vector3.new(.65,.48,.65),Vector3.new(x,10.02,-2.7),Color3.fromRGB(136,83,52),Enum.Material.Wood)
+            local spark=Instance.new("PointLight")
+            spark.Range=6
+            spark.Brightness=.6
+            spark.Color=Color3.fromRGB(113,255,145)
+            spark.Parent=potion
         end
     else
         for i=1,3 do
-            local gem=piece("RobuxCrystal"..i,Vector3.new(1.3,1.3,1.3),Vector3.new((i-2)*2.8,9,-2.6),Color3.fromRGB(103,239,220),Enum.Material.Neon)
-            gem.Shape=Enum.PartType.Ball
-            local light=Instance.new("PointLight")
-            light.Brightness=.7
-            light.Range=7
-            light.Parent=gem
+            local x=(i-2)*2.9
+            piece("GemPedestal"..i,Vector3.new(1.7,.45,1.7),Vector3.new(x,8.35,-2.5),Color3.fromRGB(121,102,159),Enum.Material.Marble)
+            local gem=piece("PremiumCrystal"..i,Vector3.new(1.55,1.55,1.55),Vector3.new(x,9.4,-2.5),({Color3.fromRGB(91,232,255),Color3.fromRGB(198,104,250),Color3.fromRGB(255,214,108)})[i],Enum.Material.Neon)
+            gem.CFrame=gem.CFrame*CFrame.Angles(math.rad(24),math.rad(45),math.rad(42))
+            local glow=Instance.new("PointLight")
+            glow.Brightness=.8
+            glow.Range=8
+            glow.Parent=gem
         end
     end
 end
