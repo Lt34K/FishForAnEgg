@@ -92,7 +92,7 @@ for _,side in ipairs({-1,1}) do
     light(cap,gold,12,.7)
 end
 local entrySign=part("FishingGateSign",Vector3.new(19,3,.8),at(-18,15.1,-58)*CFrame.Angles(0,math.rad(180),0),navy,Enum.Material.SmoothPlastic)
-part("FishingGateSignTrim",Vector3.new(20,3.8,.2),at(0,15.1,-57.45),gold,Enum.Material.Neon)
+part("FishingGateSignTrim",Vector3.new(20,3.8,.2),at(-18,15.1,-57.45),gold,Enum.Material.Neon)
 labelOnFace(entrySign,"PONTON DE PECHE",cream)
 -- Striping, roof contours, display objects and beautifully lit signs on each stand.
 local shops={
