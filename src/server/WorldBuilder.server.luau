@@ -77,9 +77,24 @@ barrier("CoastEast",Vector3.new(3,22,154),Vector3.new(122,10,0))
 barrier("CoastSouth",Vector3.new(244,22,3),Vector3.new(0,10,72))
 barrier("CoastNorthLeft",Vector3.new(113,22,3),Vector3.new(-65,10,-72))
 barrier("CoastNorthRight",Vector3.new(113,22,3),Vector3.new(65,10,-72))
+-- The physical safety wall is invisible; players see an open timber railing.
 for _,side in ipairs({-1,1}) do
-    local rail=part("PierSafetyRail",Vector3.new(1,3,93),CFrame.new(side*9,6.8,-107),Color3.fromRGB(112,77,50),Enum.Material.Wood)
-    rail.CanCollide=true
+    local safety=part("PierSafetyWall",Vector3.new(.9,4,95),CFrame.new(side*9.1,7.4,-107),Color3.fromRGB(112,77,50),Enum.Material.Wood)
+    safety.Transparency=1
+    safety.CastShadow=false
+    safety.CanTouch=false
+    for _,height in ipairs({7,9}) do
+        part("PierHandrail",Vector3.new(.36,.32,95),CFrame.new(side*9.1,height,-107),Color3.fromRGB(145,101,66),Enum.Material.WoodPlanks)
+    end
+    for z=-152,-62,10 do
+        part("PierRailingPost",Vector3.new(.9,4,.9),CFrame.new(side*9.1,7.2,z),Color3.fromRGB(106,73,48),Enum.Material.Wood)
+        local cap=part("PierPostCap",Vector3.new(1.25,.3,1.25),CFrame.new(side*9.1,9.3,z),Color3.fromRGB(222,177,109),Enum.Material.WoodPlanks)
+        cap.CanCollide=false
+    end
+end
+for z=-152,-62,4 do
+    local seam=part("PierPlankSeam",Vector3.new(17.7,.08,.13),CFrame.new(0,5.53,z),Color3.fromRGB(93,63,43),Enum.Material.Wood)
+    seam.CanCollide=false
 end
 barrier("PierEnd",Vector3.new(19,4,1),Vector3.new(0,7,-155))
 -- Falling or jumping into the ocean returns the player safely to the beach.
