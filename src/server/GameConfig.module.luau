@@ -44,6 +44,14 @@ Config.Creatures = {
 }
 Config.CreatureRarities = {"Commun", "Commun", "Peu commun", "Rare", "Rare", "Épique", "Légendaire", "Divin"}
 Config.CreatureWeights = {35,25,16,10,7,4,2,1}
+Config.CreatureIncomeMultipliers = {1,1,1.5,2,3,5,10,25}
+Config.BaseDecorations = {
+    {name="Jardinières",price=1500,color=Color3.fromRGB(69,177,96)},
+    {name="Lampes dorées",price=15000,color=Color3.fromRGB(255,214,91)},
+    {name="Cristaux",price=150000,color=Color3.fromRGB(87,225,238)},
+    {name="Totems magiques",price=1500000,color=Color3.fromRGB(180,106,247)},
+    {name="Statues royales",price=150000000,color=Color3.fromRGB(255,193,68)},
+}
 Config.CreaturesPerHabitat = 8
 Config.TotalCreatures = #Config.Creatures * Config.CreaturesPerHabitat
 Config.AnimalColors = {
