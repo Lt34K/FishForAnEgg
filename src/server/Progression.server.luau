@@ -37,7 +37,7 @@ local function snapshot(player)
     for i,entry in pairs(d.slots) do
         if entry then slots[i] = {egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt,creature=entry.creature} end
     end
-    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats,decorations=Config.BaseDecorations,decorationLevel=d.decorationLevel,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus,luckPotions=Config.LuckPotions,luckUpgrades=Config.LuckUpgrades})
+    stateEvent:FireClient(player,"State",{cash=d.cash,rod=d.rod,base=d.base,plot=d.plot,inventory=d.inventory,slots=slots,rods=Config.Rods,baseCosts=Config.BaseCosts,baseSlots=Config.BaseSlots,index=d.index,skin=d.skin,skins=Config.Skins,creatures=Config.Creatures,rarities=Config.CreatureRarities,totalCreatures=Config.TotalCreatures,habitats=Config.Habitats,decorations=Config.BaseDecorations,decorationLevel=d.decorationLevel,premiumRod=d.premiumRod,premiumEggs=d.premiumEggs,premiumProducts=Config.PremiumProducts,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus,luckPotions=Config.LuckPotions,luckUpgrades=Config.LuckUpgrades})
 end
 local function updateCash(player)
     local d=data[player]
@@ -46,10 +46,10 @@ local function updateCash(player)
     local cash=stats and stats:FindFirstChild("Cash")
     if cash then cash.Value=math.floor(d.cash) end
 end
-local function buildRod(index)
+local function buildRod(index,premium)
     local cfg=Config.Rods[index]
     local tool=Instance.new("Tool")
-    tool.Name="Canne "..cfg.name
+    tool.Name=premium and ("Canne stellaire · "..cfg.name) or ("Canne "..cfg.name)
     tool.RequiresHandle=true
     tool.CanBeDropped=false
     tool.ToolTip="Distance "..cfg.distance.."m | Profondeur "..cfg.depth.."m"
@@ -60,7 +60,7 @@ local function buildRod(index)
     handle.Name="Handle"
     handle.Size=Vector3.new(.28,4.2,.28)
     handle.Material=Enum.Material.Wood
-    handle.Color=cfg.color
+    handle.Color=premium and Color3.fromRGB(173,116,255) or cfg.color
     handle.CanCollide=false
     handle.Massless=true
     handle.Parent=tool
@@ -105,7 +105,7 @@ local function grantRod(player)
             end
         end
     end
-    buildRod(d.rod).Parent=backpack
+    buildRod(d.rod,d.premiumRod).Parent=backpack
 end
 local function getPlot(d)
     local world=workspace:FindFirstChild("FishWorld")
@@ -404,6 +404,12 @@ renderBase = function(player)
                 local e=current.slots[i]
                 local cfg=Config.Eggs[e.egg]
                 notify(player,cfg.name..(e.hatched and (" | +"..fmt(cfg.income).." $/s") or " | incubation"))
+            elseif (current.premiumEggs or 0)>0 then
+                current.premiumEggs-=1
+                current.slots[i]={egg=6,hatched=false,readyAt=os.time()+60,creature=8}
+                renderBase(player)
+                snapshot(player)
+                notify(player,"Œuf cosmique placé : dragon de glace divin garanti !")
             elseif #current.inventory>0 then
                 local eggIndex=table.remove(current.inventory,1)
                 current.slots[i]={egg=eggIndex,hatched=false,readyAt=os.time()+Config.Eggs[eggIndex].hatch,creature=(function()
@@ -443,7 +449,7 @@ local function save(player)
     busySave[player]=true
     local slots={}
     for i,e in pairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt,creature=e.creature} end end
-    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus}
+    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel,premiumRod=d.premiumRod,premiumEggs=d.premiumEggs,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus}
     local ok,err=pcall(function()
         store:UpdateAsync("P_"..player.UserId,function() return payload end)
     end)
@@ -567,7 +573,7 @@ Players.PlayerAdded:Connect(function(player)
         cash=math.max(0,tonumber(saved.cash) or 0),
         rod=math.clamp(math.floor(tonumber(saved.rod) or 1),1,#Config.Rods),
         base=math.clamp(math.floor(tonumber(saved.base) or 1),1,#Config.BaseSlots),
-        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),luckLevel=math.clamp(math.floor(tonumber(saved.luckLevel) or 0),0,#Config.LuckUpgrades),luckExpires=tonumber(saved.luckExpires) or 0,luckBonus=math.clamp(tonumber(saved.luckBonus) or 0,0,1),loaded=ok
+        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),luckLevel=math.clamp(math.floor(tonumber(saved.luckLevel) or 0),0,#Config.LuckUpgrades),luckExpires=tonumber(saved.luckExpires) or 0,luckBonus=math.clamp(tonumber(saved.luckBonus) or 0,0,1),premiumRod=saved.premiumRod==true,premiumEggs=math.clamp(math.floor(tonumber(saved.premiumEggs) or 0),0,999),loaded=ok
     }
     if type(saved.index)=="table" then
         for key,value in pairs(saved.index) do
