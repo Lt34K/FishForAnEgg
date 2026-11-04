@@ -25,6 +25,9 @@
         },
         "PremiumWorld": {
           "$path": "src/server/PremiumWorld.server.luau"
+        },
+        "CoastalPremium": {
+          "$path": "src/server/CoastalPremium.server.luau"
         }
       }
     },
