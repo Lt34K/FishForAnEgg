@@ -1,193 +1,269 @@
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-
-local player = Players.LocalPlayer
-local remote = ReplicatedStorage:WaitForChild("FishingEvent")
-local gui = Instance.new("ScreenGui")
-gui.Name = "FishingGui"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-
-local status = Instance.new("TextLabel")
-status.Name = "FishingStatus"
-status.AnchorPoint = Vector2.new(0.5, 1)
-status.Position = UDim2.new(0.5, 0, 1, -115)
-status.Size = UDim2.fromOffset(390, 52)
-status.BackgroundColor3 = Color3.fromRGB(21, 47, 68)
-status.BackgroundTransparency = 0.15
-status.TextColor3 = Color3.new(1, 1, 1)
-status.TextScaled = false
-status.TextSize = 19
-status.TextWrapped = true
-status.Font = Enum.Font.GothamBold
-status.Text = "🎣 Équipe la canne pour pêcher"
-status.Parent = gui
-Instance.new("UICorner", status).CornerRadius = UDim.new(0, 12)
-local constraint = Instance.new("UISizeConstraint")
-constraint.MaxSize = Vector2.new(390, 52)
-constraint.Parent = status
-local widthScale = Instance.new("UIScale")
-widthScale.Parent = status
-local camera = workspace.CurrentCamera
-local function updateScale()
-    camera = workspace.CurrentCamera or camera
-    if camera then widthScale.Scale = math.min(1, math.max(.62, (camera.ViewportSize.X - 24) / 390)) end
+-- Clean, mobile-friendly fishing interface with contextual controls and animated feedback.
+local Players=game:GetService("Players")
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local UserInputService=game:GetService("UserInputService")
+local TweenService=game:GetService("TweenService")
+local player=Players.LocalPlayer
+local remote=ReplicatedStorage:WaitForChild("FishingEvent")
+local gui=Instance.new("ScreenGui")
+gui.Name="FishingGui"
+gui.ResetOnSpawn=false
+gui.DisplayOrder=5
+gui.Parent=player:WaitForChild("PlayerGui")
+local function round(element,r)
+    local corner=Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,r)
+    corner.Parent=element
 end
-updateScale()
-if camera then camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale) end
-
-local progress = Instance.new("Frame")
-progress.Name = "ProgressBackground"
-progress.AnchorPoint = Vector2.new(0.5, 1)
-progress.Position = UDim2.new(0.5, 0, 1, -65)
-progress.Size = UDim2.new(0.7, 0, 0, 24)
-progress.BackgroundColor3 = Color3.fromRGB(32, 52, 65)
-progress.Visible = false
-progress.Parent = gui
-Instance.new("UICorner", progress).CornerRadius = UDim.new(0, 10)
-local sizeConstraint = Instance.new("UISizeConstraint")
-sizeConstraint.MaxSize = Vector2.new(360, 24)
-sizeConstraint.Parent = progress
-
-local fill = Instance.new("Frame")
-fill.Name = "Fill"
-fill.Size = UDim2.fromScale(0, 1)
-fill.BackgroundColor3 = Color3.fromRGB(68, 214, 133)
-fill.Parent = progress
-Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 10)
-
-local state = "idle"
-local noticeUntil = 0
+local function stroke(element,color,thickness)
+    local s=Instance.new("UIStroke")
+    s.Color=color
+    s.Thickness=thickness
+    s.Transparency=.18
+    s.Parent=element
+    return s
+end
+local function gradient(element,top,bottom)
+    local g=Instance.new("UIGradient")
+    g.Color=ColorSequence.new(top,bottom)
+    g.Rotation=90
+    g.Parent=element
+end
+local panel=Instance.new("Frame")
+panel.Name="FishingHUD"
+panel.AnchorPoint=Vector2.new(.5,1)
+panel.Position=UDim2.new(.5,0,1,-16)
+panel.Size=UDim2.fromOffset(380,164)
+panel.BackgroundColor3=Color3.fromRGB(17,39,72)
+panel.BorderSizePixel=0
+panel.Visible=false
+panel.Parent=gui
+round(panel,18)
+gradient(panel,Color3.fromRGB(27,67,105),Color3.fromRGB(12,29,62))
+stroke(panel,Color3.fromRGB(100,203,247),2)
+local panelScale=Instance.new("UIScale")
+panelScale.Parent=panel
+local camera=workspace.CurrentCamera
+local function fit()
+    camera=workspace.CurrentCamera or camera
+    if camera then panelScale.Scale=math.clamp((camera.ViewportSize.X-22)/390,.66,1) end
+end
+fit()
+if camera then camera:GetPropertyChangedSignal("ViewportSize"):Connect(fit) end
+local heading=Instance.new("TextLabel")
+heading.Name="Heading"
+heading.Size=UDim2.new(1,-34,0,24)
+heading.Position=UDim2.fromOffset(17,9)
+heading.BackgroundTransparency=1
+heading.Text="🎣  FISH FOR AN EGG"
+heading.Font=Enum.Font.GothamBlack
+heading.TextSize=16
+heading.TextColor3=Color3.fromRGB(255,217,132)
+heading.TextXAlignment=Enum.TextXAlignment.Left
+heading.Parent=panel
+local status=Instance.new("TextLabel")
+status.Name="FishingStatus"
+status.Size=UDim2.new(1,-30,0,42)
+status.Position=UDim2.fromOffset(15,34)
+status.BackgroundTransparency=1
+status.TextColor3=Color3.fromRGB(240,249,255)
+status.TextWrapped=true
+status.Font=Enum.Font.GothamBold
+status.TextSize=16
+status.Text="Avance sur le ponton pour pêcher."
+status.Parent=panel
+local progress=Instance.new("Frame")
+progress.Name="ProgressBackground"
+progress.Position=UDim2.fromOffset(19,80)
+progress.Size=UDim2.new(1,-38,0,13)
+progress.BackgroundColor3=Color3.fromRGB(11,27,53)
+progress.BorderSizePixel=0
+progress.Visible=false
+progress.ClipsDescendants=true
+progress.Parent=panel
+round(progress,9)
+local fill=Instance.new("Frame")
+fill.Name="Fill"
+fill.Size=UDim2.fromScale(0,1)
+fill.BackgroundColor3=Color3.fromRGB(97,236,142)
+fill.BorderSizePixel=0
+fill.Parent=progress
+round(fill,9)
+gradient(fill,Color3.fromRGB(171,255,144),Color3.fromRGB(47,196,166))
 local actionButton=Instance.new("TextButton")
 actionButton.Name="FishAction"
-actionButton.AnchorPoint=Vector2.new(.5,1)
-actionButton.Position=UDim2.new(.5,0,1,-20)
-actionButton.Size=UDim2.fromOffset(210,54)
-actionButton.BackgroundColor3=Color3.fromRGB(24,129,218)
-actionButton.TextColor3=Color3.new(1,1,1)
-actionButton.Font=Enum.Font.GothamBold
+actionButton.Position=UDim2.new(0,17,1,-64)
+actionButton.Size=UDim2.new(1,-34,0,51)
+actionButton.BackgroundColor3=Color3.fromRGB(25,149,220)
+actionButton.BorderSizePixel=0
+actionButton.TextColor3=Color3.fromRGB(255,255,255)
+actionButton.Font=Enum.Font.GothamBlack
 actionButton.TextSize=19
-actionButton.Text="🎣 LANCER"
-actionButton.Visible=false
-actionButton.Parent=gui
-Instance.new("UICorner",actionButton).CornerRadius=UDim.new(0,14)
-local stroke=Instance.new("UIStroke")
-stroke.Color=Color3.fromRGB(135,225,255)
-stroke.Thickness=2
-stroke.Parent=actionButton
-local function atFishingZone()
+actionButton.Text="🎣 LANCER LA LIGNE"
+actionButton.AutoButtonColor=false
+actionButton.Parent=panel
+round(actionButton,13)
+gradient(actionButton,Color3.fromRGB(57,186,245),Color3.fromRGB(19,106,204))
+local actionStroke=stroke(actionButton,Color3.fromRGB(155,234,255),2)
+local state="idle"
+local currentTarget=0
+local lastInput=0
+local lastMessage=0
+local function rodEquipped()
     local character=player.Character
-    local root=character and character:FindFirstChild("HumanoidRootPart")
-    return root ~= nil and root.Position.Y>=3 and root.Position.Z < -62 and root.Position.Z > -156 and math.abs(root.Position.X)<12
-end
-local function equipped()
-    if not player.Character then return false end
-    for _,child in ipairs(player.Character:GetChildren()) do
-        if child:IsA("Tool") and child:GetAttribute("RodLevel") then return true end
+    if not character then return false end
+    for _,v in ipairs(character:GetChildren()) do
+        if v:IsA("Tool") and type(v:GetAttribute("RodLevel"))=="number" then return true end
     end
     return false
 end
--- Keep the fishing hint out of the way until a rod is equipped.
-task.spawn(function()
-    while gui.Parent do
-        local hasRod=equipped()
-        status.Visible=hasRod
-        actionButton.Visible=hasRod
-        local atPier=atFishingZone()
-        actionButton.Text=state=="reeling" and "🥚 REMONTER !" or state=="waiting" and "⏳ ATTENDRE..." or atPier and "🎣 LANCER" or "📍 PONTON"
-        actionButton.Active=state=="reeling" or (state=="idle" and atPier)
-        if hasRod and state=="idle" and os.clock()>noticeUntil then
-            status.Text=atPier and "🎣 Prêt à pêcher ! Lance ta ligne." or "📍 Avance sur le ponton pour pêcher."
-        end
-        if not hasRod then progress.Visible=false end
-        task.wait(.35)
-    end
-end)
+local function nearPier()
+    local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    return root and root.Position.Y>=3 and root.Position.Z< -62
+        and root.Position.Z> -156 and math.abs(root.Position.X)<12
+end
+local function changeMessage(message)
+    status.Text=message
+    lastMessage=os.clock()
+end
+local function pressEffect()
+    TweenService:Create(actionButton,TweenInfo.new(.09,Enum.EasingStyle.Quad),{Size=UDim2.new(1,-43,0,47),Position=UDim2.new(0,21,1,-62)}):Play()
+    task.delay(.09,function()
+        if not actionButton.Parent then return end
+        TweenService:Create(actionButton,TweenInfo.new(.15,Enum.EasingStyle.Back),{Size=UDim2.new(1,-34,0,51),Position=UDim2.new(0,17,1,-64)}):Play()
+    end)
+end
 local function cast()
-    if not equipped() then return end
-    if not atFishingZone() then
-        status.Text="📍 Rejoins le ponton, puis lance ta ligne !"
-        noticeUntil=os.clock()+2
+    if not rodEquipped() then return end
+    if not nearPier() then
+        changeMessage("🌊 Avance sur le ponton pour pêcher !")
         return
     end
-    state = "waiting"
-    status.Text = "🎣 Ligne lancée... attends une touche !"
+    if state~="idle" then return end
+    state="waiting"
+    changeMessage("Lancer en cours… suis le bouchon !")
+    pressEffect()
     remote:FireServer("Cast")
+end
+local function tap()
+    if state~="reeling" or not rodEquipped() then return end
+    if os.clock()-lastInput<.087 then return end
+    lastInput=os.clock()
+    pressEffect()
+    remote:FireServer("Tap")
 end
 actionButton.Activated:Connect(function()
     if state=="idle" then cast()
-    elseif state=="reeling" then remote:FireServer("Tap") end
+    elseif state=="reeling" then tap() end
 end)
-local function tap()
-    if state == "reeling" and equipped() then
-        remote:FireServer("Tap")
-    end
+UserInputService.InputBegan:Connect(function(input,processed)
+    if processed or not rodEquipped() then return end
+    local click=input.UserInputType==Enum.UserInputType.MouseButton1
+        or input.UserInputType==Enum.UserInputType.MouseButton2
+        or input.UserInputType==Enum.UserInputType.Touch
+        or input.KeyCode==Enum.KeyCode.ButtonR2
+    if not click then return end
+    if state=="idle" then cast()
+    elseif state=="reeling" then tap() end
+end)
+local function celebrate()
+    local banner=Instance.new("TextLabel")
+    banner.Name="CatchCelebration"
+    banner.AnchorPoint=Vector2.new(.5,.5)
+    banner.Position=UDim2.new(.5,0,.37,25)
+    banner.Size=UDim2.fromOffset(370,72)
+    banner.BackgroundColor3=Color3.fromRGB(49,160,119)
+    banner.BackgroundTransparency=.1
+    banner.TextColor3=Color3.fromRGB(255,245,179)
+    banner.Font=Enum.Font.GothamBlack
+    banner.TextSize=24
+    banner.Text="✨ 🥚  OEUF CAPTURÉ !  ✨"
+    banner.Parent=gui
+    round(banner,17)
+    stroke(banner,Color3.fromRGB(255,228,123),3)
+    banner.TextTransparency=1
+    local tween=TweenService:Create(banner,TweenInfo.new(.34,Enum.EasingStyle.Back),{Position=UDim2.new(.5,0,.37,0),TextTransparency=0})
+    tween:Play()
+    task.delay(1.65,function()
+        if banner.Parent then
+            TweenService:Create(banner,TweenInfo.new(.35),{BackgroundTransparency=1,TextTransparency=1,Position=UDim2.new(.5,0,.37,-24)}):Play()
+            task.delay(.4,function() if banner.Parent then banner:Destroy() end end)
+        end
+    end)
 end
-
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed or not equipped() then return end
-    if state == "idle" then
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.MouseButton2
-            or input.UserInputType == Enum.UserInputType.Touch
-            or input.KeyCode == Enum.KeyCode.ButtonR2 then
-            cast()
-        end
-    elseif state == "reeling" then
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.Touch
-            or input.KeyCode == Enum.KeyCode.ButtonR2 then
-            tap()
-        end
+remote.OnClientEvent:Connect(function(action,a,b)
+    if action=="CastStarted" then
+        state="waiting"
+        changeMessage("🎣 La ligne s'envole vers l'océan…")
+    elseif action=="Splash" then
+        changeMessage("🌊 Splash ! Attends une touche…")
+    elseif action=="Bite" then
+        state="reeling"
+        currentTarget=tonumber(a) or 10
+        progress.Visible=true
+        fill.Size=UDim2.fromScale(0,1)
+        changeMessage("⚡ ÇA MORD ! Clique / tapote pour remonter !")
+    elseif action=="Progress" then
+        local ratio=math.clamp((tonumber(a) or 0)/math.max(1,tonumber(b) or currentTarget),0,1)
+        TweenService:Create(fill,TweenInfo.new(.14,Enum.EasingStyle.Quad),{Size=UDim2.fromScale(ratio,1)}):Play()
+        status.Text=string.format("🥚 Remontée : %d / %d",a,b)
+    elseif action=="Caught" then
+        state="idle"
+        progress.Visible=false
+        changeMessage("🎉 Un œuf dans ton inventaire !")
+        celebrate()
+    elseif action=="Message" then
+        state="idle"
+        progress.Visible=false
+        changeMessage(tostring(a))
     end
 end)
-
-remote.OnClientEvent:Connect(function(action, a, b)
-    if action == "CastStarted" then
-        status.Text = "🌊 Bouchon à l'eau... attends !"
-    elseif action == "Splash" then
-        status.Text = "💦 Plouf ! Observe le bouchon..."
-    elseif action == "Bite" then
-        state = "reeling"
-        status.Text = "🥚 Un œuf mord ! Clique / tapote / R2 !"
-        progress.Visible = true
-        fill.Size = UDim2.fromScale(0, 1)
-    elseif action == "Progress" then
-        TweenService:Create(fill,TweenInfo.new(.11,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.fromScale(math.clamp(a / b, 0, 1), 1)}):Play()
-    elseif action == "Caught" then
-        state = "idle"
-        status.Text = "🎉 Tu as pêché : " .. tostring(a)
-        noticeUntil=os.clock()+3
-        progress.Visible = false
-    elseif action == "Message" then
-        state = "idle"
-        status.Text = tostring(a)
-        noticeUntil=os.clock()+3
-        progress.Visible = false
-    end
-end)
-
 local function bindCharacter(character)
-    local function bindTool(tool)
-        if not tool:IsA("Tool") or not tool:GetAttribute("RodLevel") then return end
+    local function bindRod(tool)
+        if not tool:IsA("Tool") or type(tool:GetAttribute("RodLevel"))~="number" then return end
         tool.Activated:Connect(function()
             if state=="idle" then cast()
             elseif state=="reeling" then tap() end
         end)
     end
-    for _,child in ipairs(character:GetChildren()) do bindTool(child) end
-    character.ChildAdded:Connect(bindTool)
-
+    for _,child in ipairs(character:GetChildren()) do bindRod(child) end
+    character.ChildAdded:Connect(bindRod)
     character.ChildRemoved:Connect(function(child)
         if child:IsA("Tool") and child:GetAttribute("RodLevel") then
-            if state ~= "idle" then remote:FireServer("Cancel") end
-            state = "idle"
-            progress.Visible = false
-            status.Text = "🎣 Équipe la canne pour pêcher"
+            if state~="idle" then remote:FireServer("Cancel") end
+            state="idle"
+            progress.Visible=false
         end
     end)
 end
 player.CharacterAdded:Connect(bindCharacter)
 if player.Character then bindCharacter(player.Character) end
+task.spawn(function()
+    while gui.Parent do
+        local equipped=rodEquipped()
+        panel.Visible=equipped
+        if equipped then
+            if state=="reeling" then
+                actionButton.Text="🥚 REMONTER L'ŒUF !"
+                actionButton.BackgroundColor3=Color3.fromRGB(36,176,117)
+            elseif state=="waiting" then
+                actionButton.Text="⏳ ATTENDS LA TOUCHE…"
+                actionButton.BackgroundColor3=Color3.fromRGB(55,118,163)
+            elseif nearPier() then
+                actionButton.Text="🎣 LANCER LA LIGNE"
+                actionButton.BackgroundColor3=Color3.fromRGB(25,149,220)
+                if os.clock()-lastMessage>4 then status.Text="Prêt à lancer ! Clique ou appuie sur R2." end
+            else
+                actionButton.Text="🌊 REJOINS LE PONTON"
+                actionButton.BackgroundColor3=Color3.fromRGB(79,111,140)
+                if os.clock()-lastMessage>4 then status.Text="Rejoins le ponton en bois pour pêcher." end
+            end
+        else
+            if state~="idle" then
+                state="idle"
+                progress.Visible=false
+            end
+        end
+        task.wait(.25)
+    end
+end)
