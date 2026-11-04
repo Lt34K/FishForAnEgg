@@ -31,7 +31,7 @@ part("Beach", Vector3.new(250, 2, 150), CFrame.new(0, -5.7, 0), Color3.fromRGB(2
 local spawn = Instance.new("SpawnLocation")
 spawn.Name = "FishSpawn"
 spawn.Size = Vector3.new(12, 1, 12)
-spawn.CFrame = CFrame.new(0, 5.6, -39)
+spawn.CFrame = CFrame.new(0, 5.6, 23)
 spawn.Anchored = true
 spawn.Neutral = true
 spawn.Material = Enum.Material.Neon
@@ -42,11 +42,11 @@ spawn.Parent = world
 spawn.Transparency=1
 spawn.CanCollide=false
 local arrival=part("ArrivalCircle",Vector3.new(.18,15,15),
-    CFrame.new(0,5.15,-39)*CFrame.Angles(0,0,math.rad(90)),
+    CFrame.new(0,5.15,23)*CFrame.Angles(0,0,math.rad(90)),
     Color3.fromRGB(217,193,148),Enum.Material.Cobblestone)
 arrival.CanCollide=false
 local arrivalCenter=part("ArrivalCenter",Vector3.new(.2,9,9),
-    CFrame.new(0,5.28,-39)*CFrame.Angles(0,0,math.rad(90)),
+    CFrame.new(0,5.28,23)*CFrame.Angles(0,0,math.rad(90)),
     Color3.fromRGB(240,220,175),Enum.Material.Sand)
 arrivalCenter.CanCollide=false
 -- A readable sand perimeter softens the rectangular lawn into a beach boardwalk.
@@ -62,10 +62,10 @@ for _,x in ipairs({-116,116}) do
 end
 
 -- A pier heading toward the sea on the north side.
-part("FishingPier", Vector3.new(18, 2, 95), CFrame.new(0, 4.5, -107), Color3.fromRGB(143, 97, 59), Enum.Material.WoodPlanks)
+part("FishingPier", Vector3.new(18, 2, 95), CFrame.new(-18, 4.5, -107), Color3.fromRGB(143, 97, 59), Enum.Material.WoodPlanks)
 for _, z in ipairs({-75, -105, -135}) do
     for _, x in ipairs({-7, 7}) do
-        part("PierSupport", Vector3.new(2, 13, 2), CFrame.new(x, -1.5, z), Color3.fromRGB(99, 65, 42), Enum.Material.Wood)
+        part("PierSupport", Vector3.new(2, 13, 2), CFrame.new(-18+x, -1.5, z), Color3.fromRGB(99, 65, 42), Enum.Material.Wood)
     end
 end
 
@@ -98,28 +98,28 @@ end
 barrier("CoastWest",Vector3.new(3,22,154),Vector3.new(-122,10,0))
 barrier("CoastEast",Vector3.new(3,22,154),Vector3.new(122,10,0))
 barrier("CoastSouth",Vector3.new(244,22,3),Vector3.new(0,10,72))
-barrier("CoastNorthLeft",Vector3.new(113,22,3),Vector3.new(-65,10,-72))
-barrier("CoastNorthRight",Vector3.new(113,22,3),Vector3.new(65,10,-72))
+barrier("CoastNorthLeft",Vector3.new(92,22,3),Vector3.new(-75,10,-72))
+barrier("CoastNorthRight",Vector3.new(130,22,3),Vector3.new(57,10,-72))
 -- The physical safety wall is invisible; players see an open timber railing.
 for _,side in ipairs({-1,1}) do
-    local safety=part("PierSafetyWall",Vector3.new(.9,4,95),CFrame.new(side*9.1,7.4,-107),Color3.fromRGB(112,77,50),Enum.Material.Wood)
+    local safety=part("PierSafetyWall",Vector3.new(.9,4,95),CFrame.new(-18+side*9.1,7.4,-107),Color3.fromRGB(112,77,50),Enum.Material.Wood)
     safety.Transparency=1
     safety.CastShadow=false
     safety.CanTouch=false
     for _,height in ipairs({7,9}) do
-        part("PierHandrail",Vector3.new(.36,.32,95),CFrame.new(side*9.1,height,-107),Color3.fromRGB(145,101,66),Enum.Material.WoodPlanks)
+        part("PierHandrail",Vector3.new(.36,.32,95),CFrame.new(-18+side*9.1,height,-107),Color3.fromRGB(145,101,66),Enum.Material.WoodPlanks)
     end
     for z=-152,-62,10 do
-        part("PierRailingPost",Vector3.new(.9,4,.9),CFrame.new(side*9.1,7.2,z),Color3.fromRGB(106,73,48),Enum.Material.Wood)
-        local cap=part("PierPostCap",Vector3.new(1.25,.3,1.25),CFrame.new(side*9.1,9.3,z),Color3.fromRGB(222,177,109),Enum.Material.WoodPlanks)
+        part("PierRailingPost",Vector3.new(.9,4,.9),CFrame.new(-18+side*9.1,7.2,z),Color3.fromRGB(106,73,48),Enum.Material.Wood)
+        local cap=part("PierPostCap",Vector3.new(1.25,.3,1.25),CFrame.new(-18+side*9.1,9.3,z),Color3.fromRGB(222,177,109),Enum.Material.WoodPlanks)
         cap.CanCollide=false
     end
 end
 for z=-152,-62,4 do
-    local seam=part("PierPlankSeam",Vector3.new(17.7,.08,.13),CFrame.new(0,5.53,z),Color3.fromRGB(93,63,43),Enum.Material.Wood)
+    local seam=part("PierPlankSeam",Vector3.new(17.7,.08,.13),CFrame.new(-18,5.53,z),Color3.fromRGB(93,63,43),Enum.Material.Wood)
     seam.CanCollide=false
 end
-barrier("PierEnd",Vector3.new(19,4,1),Vector3.new(0,7,-155))
+barrier("PierEnd",Vector3.new(19,4,1),Vector3.new(-18,7,-155))
 -- Falling or jumping into the ocean returns the player safely to the beach.
 local Players=game:GetService("Players")
 local RunService=game:GetService("RunService")
@@ -133,10 +133,27 @@ RunService.Heartbeat:Connect(function(dt)
         local root=character and character:FindFirstChild("HumanoidRootPart")
         if root and root.Position.Y<0 then
             root.AssemblyLinearVelocity=Vector3.zero
-            character:PivotTo(CFrame.new(0,9,-39))
+            character:PivotTo(CFrame.new(0,9,23))
         end
     end
 end)
+
+-- Orient new arrivals toward the seaside market, not the bases behind them.
+local function faceMarket(character)
+    task.delay(.25,function()
+        local root=character and character:FindFirstChild("HumanoidRootPart")
+        if root and math.abs(root.Position.X)<9 and math.abs(root.Position.Z-23)<10 then
+            local pos=root.Position
+            character:PivotTo(CFrame.lookAt(pos,pos+Vector3.new(0,0,-12)))
+        end
+    end)
+end
+local function hookPlayer(player)
+    player.CharacterAdded:Connect(faceMarket)
+    if player.Character then faceMarket(player.Character) end
+end
+Players.PlayerAdded:Connect(hookPlayer)
+for _,plr in ipairs(Players:GetPlayers()) do hookPlayer(plr) end
 
 -- Soft coastal lighting, consistent across servers.
 local Lighting=game:GetService("Lighting")
