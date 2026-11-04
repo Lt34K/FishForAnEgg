@@ -290,6 +290,61 @@ local function createEggOrCreature(parent,entry,config,position)
                 for i=1,3 do detail("IceCrystal"..i,Vector3.new(.4,1,.4),Vector3.new(0,1.25,(i-2)*.65),Color3.fromRGB(180,251,255)) end
             end
         end
+        -- Additional species-specific geometry for previously generic animals.
+        if entry.egg==1 then
+            if variant==3 then
+                for _,side in ipairs({-1,1}) do detail("SquirrelEar",Vector3.new(.32,.65,.4),Vector3.new(side*.6,1.45,-.85)) end
+            elseif variant==6 then
+                detail("BoarSnout",Vector3.new(1.1,.6,.65),Vector3.new(0,.05,-1.8),Color3.fromRGB(187,131,122))
+                for _,side in ipairs({-1,1}) do detail("Tusk",Vector3.new(.23,.45,.25),Vector3.new(side*.5,-.12,-2.05),Color3.fromRGB(251,237,197)) end
+            elseif variant==7 then
+                detail("UnicornHorn",Vector3.new(.25,1.35,.25),Vector3.new(0,2.05,-1.2),Color3.fromRGB(251,218,115))
+            elseif variant==8 then
+                for _,side in ipairs({-1,1}) do detail("SpiritLeaf",Vector3.new(.8,1.2,.2),Vector3.new(side*1.3,1.15,0),Color3.fromRGB(89,245,155)) end
+            end
+        elseif entry.egg==2 then
+            if variant==2 then
+                detail("MarmotCheeks",Vector3.new(1.2,.45,.45),Vector3.new(0,.2,-1.55),Color3.fromRGB(228,190,139))
+            elseif variant==6 then
+                for _,side in ipairs({-1,1}) do detail("LynxEarTuft",Vector3.new(.22,.75,.22),Vector3.new(side*.58,1.75,-.8),Color3.fromRGB(60,56,52)) end
+            elseif variant==7 then
+                detail("GriffonBeak",Vector3.new(.55,.5,.9),Vector3.new(0,.1,-1.9),Color3.fromRGB(250,192,79))
+                for _,side in ipairs({-1,1}) do detail("GriffonTalons",Vector3.new(.3,.4,.55),Vector3.new(side*.85,-1.4,-.9),Color3.fromRGB(239,190,95)) end
+            elseif variant==8 then
+                detail("GolemCore",Vector3.new(.9,1,.2),Vector3.new(0,.1,-1.13),Color3.fromRGB(82,244,251))
+            end
+        elseif entry.egg==3 then
+            if variant==2 then
+                detail("MeerkatBelly",Vector3.new(1.15,1.45,.25),Vector3.new(0,-.25,-1.15),Color3.fromRGB(236,211,163))
+            elseif variant==5 then
+                detail("CobraHood",Vector3.new(2.2,1.7,.35),Vector3.new(0,.9,-.65),Color3.fromRGB(176,122,76))
+                detail("CobraTongue",Vector3.new(.15,.15,.8),Vector3.new(0,.05,-2.05),Color3.fromRGB(242,87,112))
+            elseif variant==7 then
+                detail("SphinxHeaddress",Vector3.new(1.9,.55,1.4),Vector3.new(0,1.4,-.95),Color3.fromRGB(247,201,75))
+            elseif variant==8 then
+                for _,side in ipairs({-1,1}) do detail("SandPhoenixWing",Vector3.new(1.9,.4,1.4),Vector3.new(side*1.8,.6,.2),Color3.fromRGB(255,174,52)) end
+            end
+        elseif entry.egg==4 then
+            if variant==1 then detail("SalamanderSpots",Vector3.new(1.8,.15,1),Vector3.new(0,1.2,0),Color3.fromRGB(255,219,77))
+            elseif variant==2 then detail("LizardCrest",Vector3.new(.5,.8,1.4),Vector3.new(0,1.35,-.1),Color3.fromRGB(76,212,98))
+            elseif variant==3 then for i=1,3 do detail("IguanaSpine"..i,Vector3.new(.3,.7,.3),Vector3.new(0,1.3,(i-2)*.65),Color3.fromRGB(128,232,92)) end
+            elseif variant==4 then detail("MonitorTail",Vector3.new(.75,.5,2.5),Vector3.new(0,-.5,2),Color3.fromRGB(101,93,74))
+            elseif variant==6 then for i=1,3 do detail("LavaGlow"..i,Vector3.new(.4,.25,.45),Vector3.new((i-2)*.6,1.2,.2),Color3.fromRGB(255,113,30)) end
+            end
+        elseif entry.egg==5 then
+            if variant==3 then detail("DolphinSnout",Vector3.new(.65,.45,1.2),Vector3.new(0,.15,-1.85),Color3.fromRGB(139,212,236))
+            elseif variant==5 then detail("WhaleSpout",Vector3.new(.3,1.1,.3),Vector3.new(0,1.6,-.5),Color3.fromRGB(155,230,255))
+            elseif variant==7 then detail("KrakenEyes",Vector3.new(1.8,.5,.2),Vector3.new(0,.45,-1.25),Color3.fromRGB(215,133,247))
+            elseif variant==8 then for _,side in ipairs({-1,1}) do detail("LeviathanFin",Vector3.new(.35,1.2,1.5),Vector3.new(side*1.3,.35,.8),Color3.fromRGB(94,246,242)) end
+            end
+        elseif entry.egg==6 then
+            if variant==3 then detail("ArcticFoxTail",Vector3.new(1.1,1,1.9),Vector3.new(.75,-.2,1.5),Color3.fromRGB(255,255,255))
+            elseif variant==4 then for _,side in ipairs({-1,1}) do detail("WalrusTusk",Vector3.new(.28,1,.3),Vector3.new(side*.45,-.35,-1.7),Color3.fromRGB(255,247,212)) end
+            elseif variant==6 then detail("OwlFace",Vector3.new(1.35,1,.25),Vector3.new(0,.65,-1.55),Color3.fromRGB(250,248,244))
+            elseif variant==7 then for _,side in ipairs({-1,1}) do detail("YetiClaw",Vector3.new(.4,.65,.5),Vector3.new(side*1.35,-1,-.8),Color3.fromRGB(171,224,248)) end
+            elseif variant==8 then detail("DragonIceTail",Vector3.new(.7,.7,2.5),Vector3.new(0,-.3,1.9),Color3.fromRGB(147,243,255))
+            end
+        end
         if entry.egg==3 and variant==3 then
             for _,side in ipairs({-1,1}) do
                 ornament(holder,"Claw",Vector3.new(.8,.25,.65),center+Vector3.new(side*1.5,-.7,-.7),color)
