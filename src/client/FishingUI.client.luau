@@ -120,7 +120,7 @@ end
 local function nearPier()
     local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     return root and root.Position.Y>=3 and root.Position.Z< -62
-        and root.Position.Z> -156 and math.abs(root.Position.X)<12
+        and root.Position.Z> -156 and math.abs(root.Position.X+18)<12
 end
 local function changeMessage(message)
     status.Text=message
