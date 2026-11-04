@@ -75,12 +75,12 @@ Config.BaseDecorations = {
 Config.CreaturesPerHabitat = 8
 Config.TotalCreatures = #Config.Creatures * Config.CreaturesPerHabitat
 Config.AnimalColors = {
-    {Color3.fromRGB(228,214,193),Color3.fromRGB(220,104,54),Color3.fromRGB(170,99,49),Color3.fromRGB(139,126,112),Color3.fromRGB(167,117,73)},
-    {Color3.fromRGB(211,206,189),Color3.fromRGB(159,124,88),Color3.fromRGB(115,125,134),Color3.fromRGB(113,82,65),Color3.fromRGB(135,98,63)},
-    {Color3.fromRGB(236,198,127),Color3.fromRGB(195,150,92),Color3.fromRGB(114,83,66),Color3.fromRGB(196,151,101),Color3.fromRGB(179,144,92)},
-    {Color3.fromRGB(245,116,54),Color3.fromRGB(113,166,88),Color3.fromRGB(71,145,99),Color3.fromRGB(103,96,75),Color3.fromRGB(100,86,69)},
-    {Color3.fromRGB(229,97,85),Color3.fromRGB(91,168,128),Color3.fromRGB(100,177,205),Color3.fromRGB(81,126,162),Color3.fromRGB(88,125,157)},
-    {Color3.fromRGB(45,55,68),Color3.fromRGB(179,197,208),Color3.fromRGB(236,239,243),Color3.fromRGB(133,145,155),Color3.fromRGB(242,244,247)},
+    {Color3.fromRGB(228,214,193),Color3.fromRGB(220,104,54),Color3.fromRGB(170,99,49),Color3.fromRGB(139,126,112),Color3.fromRGB(167,117,73),Color3.fromRGB(190,185,145),Color3.fromRGB(246,198,94),Color3.fromRGB(89,226,139)},
+    {Color3.fromRGB(211,206,189),Color3.fromRGB(159,124,88),Color3.fromRGB(115,125,134),Color3.fromRGB(113,82,65),Color3.fromRGB(135,98,63),Color3.fromRGB(186,147,111),Color3.fromRGB(235,184,104),Color3.fromRGB(129,165,193)},
+    {Color3.fromRGB(236,198,127),Color3.fromRGB(195,150,92),Color3.fromRGB(114,83,66),Color3.fromRGB(196,151,101),Color3.fromRGB(179,144,92),Color3.fromRGB(245,232,208),Color3.fromRGB(218,179,117),Color3.fromRGB(255,206,91)},
+    {Color3.fromRGB(245,116,54),Color3.fromRGB(113,166,88),Color3.fromRGB(71,145,99),Color3.fromRGB(103,96,75),Color3.fromRGB(100,86,69),Color3.fromRGB(252,113,40),Color3.fromRGB(255,173,50),Color3.fromRGB(204,68,48)},
+    {Color3.fromRGB(229,97,85),Color3.fromRGB(91,168,128),Color3.fromRGB(100,177,205),Color3.fromRGB(81,126,162),Color3.fromRGB(88,125,157),Color3.fromRGB(126,188,211),Color3.fromRGB(130,88,177),Color3.fromRGB(73,215,223)},
+    {Color3.fromRGB(45,55,68),Color3.fromRGB(179,197,208),Color3.fromRGB(236,239,243),Color3.fromRGB(133,145,155),Color3.fromRGB(242,244,247),Color3.fromRGB(241,242,235),Color3.fromRGB(215,235,247),Color3.fromRGB(111,222,248)},
 }
 Config.Skins = {
     {name="Classique",required=0,color=Color3.fromRGB(204,222,235)},
