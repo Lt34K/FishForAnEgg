@@ -493,6 +493,31 @@ polish(notice,palette.gold)
 -- Small icon-like visual accents without external asset IDs or broken images.
 iconTile(gui,"🐟",UDim2.new(.5,-154,0,12),palette.blue)
 
+-- Compact responsive HUD: icons remain visible without dominating the camera.
+local UIS=game:GetService("UserInputService")
+local camera=workspace.CurrentCamera
+local hudScale=Instance.new("UIScale")
+hudScale.Name="ResponsiveHudScale"
+hudScale.Parent=gui
+local function fitHud()
+    camera=workspace.CurrentCamera or camera
+    if not camera then return end
+    local width=camera.ViewportSize.X
+    hudScale.Scale=math.clamp(width/1500,.68,1)
+end
+fitHud()
+if camera then camera:GetPropertyChangedSignal("ViewportSize"):Connect(fitHud) end
+-- Show a short contextual hint rather than a large always-open tutorial.
+local help=makeLabel(gui,"FishingHelp",UDim2.new(.5,-175,1,-118),UDim2.fromOffset(350,34),"🎣 Équipe ta canne et rejoins le ponton")
+help.BackgroundColor3=Color3.fromRGB(19,42,67)
+help.TextScaled=false
+help.TextSize=14
+help.TextTransparency=.15
+polish(help,palette.navy)
+task.delay(10,function()
+    if help.Parent then help:Destroy() end
+end)
+
 action:FireServer("Sync")
 
 task.spawn(function()
