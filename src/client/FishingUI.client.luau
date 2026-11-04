@@ -58,6 +58,23 @@ fill.Parent = progress
 Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 10)
 
 local state = "idle"
+local actionButton=Instance.new("TextButton")
+actionButton.Name="FishAction"
+actionButton.AnchorPoint=Vector2.new(.5,1)
+actionButton.Position=UDim2.new(.5,0,1,-20)
+actionButton.Size=UDim2.fromOffset(210,54)
+actionButton.BackgroundColor3=Color3.fromRGB(24,129,218)
+actionButton.TextColor3=Color3.new(1,1,1)
+actionButton.Font=Enum.Font.GothamBold
+actionButton.TextSize=19
+actionButton.Text="🎣 LANCER"
+actionButton.Visible=false
+actionButton.Parent=gui
+Instance.new("UICorner",actionButton).CornerRadius=UDim.new(0,14)
+local stroke=Instance.new("UIStroke")
+stroke.Color=Color3.fromRGB(135,225,255)
+stroke.Thickness=2
+stroke.Parent=actionButton
 local function equipped()
     if not player.Character then return false end
     for _,child in ipairs(player.Character:GetChildren()) do
@@ -70,6 +87,9 @@ task.spawn(function()
     while gui.Parent do
         local hasRod=equipped()
         status.Visible=hasRod
+        actionButton.Visible=hasRod
+        actionButton.Text=state=="reeling" and "🥚 REMONTER !" or state=="waiting" and "⏳ ATTENDRE..." or "🎣 LANCER"
+        actionButton.Active=state~="waiting"
         if not hasRod then progress.Visible=false end
         task.wait(.35)
     end
@@ -80,6 +100,10 @@ local function cast()
     status.Text = "🎣 Ligne lancée... attends une touche !"
     remote:FireServer("Cast")
 end
+actionButton.Activated:Connect(function()
+    if state=="idle" then cast()
+    elseif state=="reeling" then remote:FireServer("Tap") end
+end)
 local function tap()
     if state == "reeling" and equipped() then
         remote:FireServer("Tap")
@@ -89,7 +113,8 @@ end
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed or not equipped() then return end
     if state == "idle" then
-        if input.UserInputType == Enum.UserInputType.MouseButton2
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.MouseButton2
             or input.UserInputType == Enum.UserInputType.Touch
             or input.KeyCode == Enum.KeyCode.ButtonR2 then
             cast()
@@ -125,6 +150,16 @@ remote.OnClientEvent:Connect(function(action, a, b)
 end)
 
 local function bindCharacter(character)
+    local function bindTool(tool)
+        if not tool:IsA("Tool") or not tool:GetAttribute("RodLevel") then return end
+        tool.Activated:Connect(function()
+            if state=="idle" then cast()
+            elseif state=="reeling" then tap() end
+        end)
+    end
+    for _,child in ipairs(character:GetChildren()) do bindTool(child) end
+    character.ChildAdded:Connect(bindTool)
+
     character.ChildRemoved:Connect(function(child)
         if child:IsA("Tool") and child:GetAttribute("RodLevel") then
             if state ~= "idle" then remote:FireServer("Cancel") end
