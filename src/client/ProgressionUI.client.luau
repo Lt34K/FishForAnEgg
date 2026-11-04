@@ -209,7 +209,8 @@ events.OnClientEvent:Connect(function(kind,payload)
         local nextRod=state.rods[state.rod+1]
         buyRod.Text=nextRod and ("Canne "..nextRod.name.." : "..fmt(nextRod.price).." $") or "Cannes : MAX"
         local nextPrice=state.baseCosts[state.base+1]
-        baseInfo.Text="🏠 Niveau "..state.base.." | "..state.baseSlots[state.base].." emplacements"\n        local nextDecoration=(state.decorations or {})[(state.decorationLevel or 0)+1]\n        decorButton.Text=nextDecoration and ("🎨 "..nextDecoration.name.." : "..fmt(nextDecoration.price).." $") or "🎨 Décorations : MAX"
+        baseInfo.Text="🏠 Niveau "..state.base.." | "..state.baseSlots[state.base].." emplacements"
+        local nextDecoration=(state.decorations or {})[(state.decorationLevel or 0)+1]\n        decorButton.Text=nextDecoration and ("🎨 "..nextDecoration.name.." : "..fmt(nextDecoration.price).." $") or "🎨 Décorations : MAX"
         buyBase.Text=nextPrice and ("Agrandir : "..fmt(nextPrice).." $") or "Base : MAX"
     elseif kind=="Notice" then
         noticeId+=1
