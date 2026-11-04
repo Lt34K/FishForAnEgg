@@ -546,6 +546,26 @@ Players.PlayerAdded:Connect(function(player)
         task.wait(.5)
         grantRod(player)
     end)
+    -- Roblox may recreate Backpack during spawn: retry until the rod is present.
+    task.spawn(function()
+        for attempt=1,8 do
+            if not player.Parent or not data[player] then return end
+            local backpack=player:FindFirstChild("Backpack")
+            local character=player.Character
+            local hasRod=false
+            for _,container in ipairs({backpack,character}) do
+                if container then
+                    for _,item in ipairs(container:GetChildren()) do
+                        if item:IsA("Tool") and item:GetAttribute("RodLevel") then hasRod=true break end
+                    end
+                end
+                if hasRod then break end
+            end
+            if hasRod then return end
+            if backpack then grantRod(player) end
+            task.wait(1)
+        end
+    end)
     task.defer(function()
         player:WaitForChild("Backpack")
         grantRod(player)
