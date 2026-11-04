@@ -526,11 +526,11 @@ local function cardAccent(button,color,icon)
     local shadow=Instance.new("Frame")
     shadow.Name="CardShadow"
     shadow.AnchorPoint=Vector2.new(.5,.5)
-    shadow.Position=UDim2.fromScale(.5,.56)
-    shadow.Size=UDim2.fromScale(1,.98)
-    shadow.BackgroundColor3=Color3.fromRGB(7,18,35)
-    shadow.BackgroundTransparency=.55
-    shadow.ZIndex=button.ZIndex-1
+    shadow.Position=UDim2.new(.5,0,1,-7)
+    shadow.Size=UDim2.new(1,-20,0,3)
+    shadow.BackgroundColor3=color
+    shadow.BackgroundTransparency=.3
+    shadow.ZIndex=button.ZIndex+1
     shadow.Parent=button
     Instance.new("UICorner",shadow).CornerRadius=UDim.new(0,12)
     local strip=Instance.new("Frame")
