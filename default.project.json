@@ -44,6 +44,9 @@
           },
           "ProgressionUI": {
             "$path": "src/client/ProgressionUI.client.luau"
+          },
+          "WorldAmbient": {
+            "$path": "src/client/WorldAmbient.client.luau"
           }
         }
       }
