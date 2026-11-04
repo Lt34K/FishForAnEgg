@@ -16,8 +16,10 @@ local function block(name,size,pos,color,material)
     return p
 end
 -- Walkway links the center of the rear plots to the fishing pier.
-block("CentralPath",Vector3.new(12,.18,83),Vector3.new(0,5.1,-5),Color3.fromRGB(210,190,152),Enum.Material.Cobblestone)
-block("PierEntrance",Vector3.new(12,.18,13),Vector3.new(0,5.15,-53),Color3.fromRGB(210,190,152),Enum.Material.Cobblestone)
+block("MainMarketApproach",Vector3.new(12,.18,42),Vector3.new(0,5.1,26),Color3.fromRGB(210,190,152),Enum.Material.Cobblestone)
+block("MarketCrossing",Vector3.new(36,.18,12),Vector3.new(-9,5.1,5),Color3.fromRGB(210,190,152),Enum.Material.Cobblestone)
+block("FishingPromenade",Vector3.new(12,.18,65),Vector3.new(-18,5.1,-25),Color3.fromRGB(210,190,152),Enum.Material.Cobblestone)
+block("PierEntrance",Vector3.new(12,.18,13),Vector3.new(-18,5.15,-53),Color3.fromRGB(210,190,152),Enum.Material.Cobblestone)
 -- Lamps beside the walkway and pier.
 for _,z in ipairs({-45,-18,12,42}) do
     for _,x in ipairs({-9,9}) do
@@ -38,7 +40,7 @@ for _,x in ipairs({-111,-104,104,111}) do
     end
 end
 -- Signs and fishing markers.
-local sign=block("FishingSign",Vector3.new(10,4,.6),Vector3.new(0,9,-60),Color3.fromRGB(123,83,54),Enum.Material.Wood)
+local sign=block("FishingSign",Vector3.new(10,4,.6),Vector3.new(-18,9,-60),Color3.fromRGB(123,83,54),Enum.Material.Wood)
 local surface=Instance.new("SurfaceGui")
 surface.Face=Enum.NormalId.Front
 surface.Parent=sign
@@ -53,8 +55,8 @@ text.Parent=surface
 -- The entrance sign faces arriving players, not the ocean.
 surface.Face=Enum.NormalId.Back
 -- Dedicated fishing-station sign beside the far end of the pier.
-block("FishingStationPost",Vector3.new(.8,8,.8),Vector3.new(-11.3,8,-129),Color3.fromRGB(120,82,55),Enum.Material.Wood)
-local station=block("FishingStationSign",Vector3.new(9.3,3.3,.55),Vector3.new(-14,12.4,-129),Color3.fromRGB(30,92,138),Enum.Material.WoodPlanks)
+block("FishingStationPost",Vector3.new(.8,8,.8),Vector3.new(-29,8,-129),Color3.fromRGB(120,82,55),Enum.Material.Wood)
+local station=block("FishingStationSign",Vector3.new(9.3,3.3,.55),Vector3.new(-33,12.4,-129),Color3.fromRGB(30,92,138),Enum.Material.WoodPlanks)
 station.CanCollide=false
 local stationFace=Instance.new("SurfaceGui")
 stationFace.Face=Enum.NormalId.Back
@@ -82,9 +84,9 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     folder.Name=kind.."Stand"
     folder.Parent=decorations
     local function piece(name,size,offset,color,material)
-        local p=block(name,size,Vector3.new(x,0,kind=="Luck" and 6 or -37)+offset,color,material)
+        local p=block(name,size,Vector3.new(x,0,-12)+offset,color,material)
         p.Parent=folder
-        p.CFrame=CFrame.new(x,0,kind=="Luck" and 6 or -37)*CFrame.Angles(0,math.rad(180),0)*CFrame.new(offset)
+        p.CFrame=CFrame.new(x,0,-12)*CFrame.Angles(0,math.rad(180),0)*CFrame.new(offset)
         return p
     end
     piece("Floor",Vector3.new(15,.6,12),Vector3.new(0,5.3,0),trim,Enum.Material.WoodPlanks)
@@ -235,8 +237,8 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     end
 end
 createShop("Rods",-36,"CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(245,199,87))
-createShop("Robux",36,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
-createShop("Luck",34,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
+createShop("Robux",0,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
+createShop("Luck",36,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
 
 -- Coastal scenery: deterministic, lightweight, and outside the six build plots.
 local scenery=Instance.new("Folder")
