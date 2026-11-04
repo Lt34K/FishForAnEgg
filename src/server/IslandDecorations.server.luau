@@ -114,6 +114,33 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     label.TextScaled=true
     label.Text=title
     label.Parent=surface
+    -- Illustrated sign badge and layered sign trim.
+    local signBorder=piece("SignGoldTrim",Vector3.new(12.7,3.25,.2),Vector3.new(0,11.2,-4.75),trim,Enum.Material.Neon)
+    signBorder.CanCollide=false
+    local badge=Instance.new("BillboardGui")
+    badge.Name="ShopIconBadge"
+    badge.Size=UDim2.fromOffset(92,92)
+    badge.StudsOffsetWorldSpace=Vector3.new(0,4.5,0)
+    badge.MaxDistance=105
+    badge.AlwaysOnTop=false
+    badge.Parent=sign
+    local iconBackground=Instance.new("Frame")
+    iconBackground.Size=UDim2.fromScale(1,1)
+    iconBackground.BackgroundColor3=primary
+    iconBackground.Parent=badge
+    Instance.new("UICorner",iconBackground).CornerRadius=UDim.new(1,0)
+    local outline=Instance.new("UIStroke")
+    outline.Thickness=4
+    outline.Color=trim
+    outline.Parent=iconBackground
+    local icon=Instance.new("TextLabel")
+    icon.Size=UDim2.fromScale(1,1)
+    icon.BackgroundTransparency=1
+    icon.Text=kind=="Rods" and "🎣" or kind=="Luck" and "🍀" or "💎"
+    icon.Font=Enum.Font.GothamBlack
+    icon.TextScaled=true
+    icon.TextColor3=Color3.new(1,1,1)
+    icon.Parent=iconBackground
     local floating=Instance.new("BillboardGui")
     floating.Size=UDim2.fromOffset(210,45)
     floating.StudsOffset=Vector3.new(0,3,0)
