@@ -225,6 +225,62 @@ for i=1,48 do
     end
 end
 -- Lighting/post-processing is handled by CoastalPremium to avoid stacked effects.
+-- Cinematic background landmarks: waterfall island, striped lighthouse and volcano.
+-- They are out to sea and cannot interfere with players or their base plots.
+part("WaterfallCliff",Vector3.new(54,24,43),at(-166,1.2,-253),Color3.fromRGB(111,130,125),Enum.Material.Rock)
+part("WaterfallCliffTop",Vector3.new(53,3,42),at(-166,14.5,-253),Color3.fromRGB(68,162,87),Enum.Material.Grass)
+for _,side in ipairs({-1,1}) do
+    part("WaterfallRockFace",Vector3.new(18,20,30),at(-166+side*18,5,-228)*CFrame.Angles(0,math.rad(side*17),0),Color3.fromRGB(90,108,112),Enum.Material.Slate,"Wedge")
+end
+local cascade=part("IslandWaterfall",Vector3.new(9,21,.6),at(-151,3.9,-230),Color3.fromRGB(112,222,249),Enum.Material.Glass)
+cascade.Transparency=.16
+local foam=part("WaterfallFoam",Vector3.new(13,.2,5),at(-151,-3.75,-227),Color3.fromRGB(213,251,255),Enum.Material.Neon)
+foam.Transparency=.36
+for j=1,3 do
+    local stream=part("WaterfallStream",Vector3.new(1.25,19,.17),at(-155.4+j*2.2,4,-229.5),Color3.fromRGB(222,254,255),Enum.Material.Neon)
+    stream.Transparency=.35
+end
+-- Cylinder length is its local X axis, rotated upright for a lighthouse tower.
+local cylinderUp=CFrame.Angles(0,0,math.rad(90))
+part("DistantLighthouseTower",Vector3.new(29,7.3,7.3),at(-179,30,-256)*cylinderUp,Color3.fromRGB(246,238,224),Enum.Material.Concrete,"Cylinder")
+for _,height in ipairs({22,31,39}) do
+    part("LighthouseRedStripe",Vector3.new(2.5,7.55,7.55),at(-179,height,-256)*cylinderUp,Color3.fromRGB(212,66,60),Enum.Material.SmoothPlastic,"Cylinder")
+end
+local beacon=part("LighthouseGlassBeacon",Vector3.new(7.2,5,7.2),at(-179,46,-256),Color3.fromRGB(255,238,157),Enum.Material.Neon)
+light(beacon,Color3.fromRGB(255,219,145),65,1.2)
+part("LighthouseCap",Vector3.new(9,1.8,9),at(-179,49,-256),Color3.fromRGB(195,58,64),Enum.Material.SmoothPlastic)
+-- Tall charcoal volcanic massif with recognizable glowing lava strips.
+local volcanoX,volcanoZ=236,-357
+for _,side in ipairs({-1,1}) do
+    part("VolcanoSlope",Vector3.new(61,90,67),at(volcanoX+side*23,37,volcanoZ)*CFrame.Angles(0,math.rad(side*26),0),Color3.fromRGB(83,78,83),Enum.Material.Slate,"Wedge")
+end
+local vent=part("VolcanoLavaVent",Vector3.new(16,1.5,16),at(volcanoX,80,volcanoZ),Color3.fromRGB(255,102,45),Enum.Material.Neon)
+light(vent,Color3.fromRGB(255,119,59),30,1.2)
+for j=1,3 do
+    local lava=part("LavaStream",Vector3.new(2.1,31,.65),at(volcanoX-12+j*9,55,volcanoZ+29)*CFrame.Angles(0,0,math.rad(10-j*4)),Color3.fromRGB(255,108,41),Enum.Material.Neon)
+    lava.Transparency=.18
+end
+local smoke=Instance.new("ParticleEmitter")
+smoke.Name="VolcanoSmoke"
+smoke.Texture="rbxasset://textures/particles/smoke_main.dds"
+smoke.Color=ColorSequence.new(Color3.fromRGB(112,99,103),Color3.fromRGB(177,171,181))
+smoke.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,8),NumberSequenceKeypoint.new(1,23)})
+smoke.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.35),NumberSequenceKeypoint.new(1,1)})
+smoke.Rate=2
+smoke.Speed=NumberRange.new(3,6)
+smoke.Lifetime=NumberRange.new(6,10)
+smoke.SpreadAngle=Vector2.new(15,15)
+smoke.Parent=vent
+-- Sparkling water catches sunlight between the player and the distant islands.
+local waves=Random.new(2764)
+for i=1,110 do
+    local xx=waves:NextNumber(-285,285)
+    local zz=waves:NextNumber(-338,-90)
+    local wave=part("SeaWaveGlint",Vector3.new(waves:NextNumber(3,10),.08,waves:NextNumber(.25,.6)),
+        at(xx,-3.84,zz)*CFrame.Angles(0,waves:NextNumber(-.26,.26),0),
+        Color3.fromRGB(179,242,253),Enum.Material.Neon)
+    wave.Transparency=waves:NextNumber(.55,.78)
+end
 -- Distant seabirds frame the horizon and can be softly animated client-side.
 for i=1,6 do
     local x=(i-3.5)*35
