@@ -63,7 +63,7 @@ local function createShop(kind,x,title,subtitle,primary,trim)
     folder.Name=kind.."Stand"
     folder.Parent=decorations
     local function piece(name,size,offset,color,material)
-        local p=block(name,size,Vector3.new(x,0,kind=="Luck" and 3 or -37)+offset,color,material)
+        local p=block(name,size,Vector3.new(x,0,-37)+offset,color,material)
         p.Parent=folder
         return p
     end
@@ -132,9 +132,9 @@ local function createShop(kind,x,title,subtitle,primary,trim)
         end
     end
 end
-createShop("Rods",-23,"CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(245,199,87))
-createShop("Robux",23,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
-createShop("Luck",24,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
+createShop("Rods",-32,"CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(245,199,87))
+createShop("Robux",0,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
+createShop("Luck",32,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
 
 -- Coastal scenery: deterministic, lightweight, and outside the six build plots.
 local scenery=Instance.new("Folder")
@@ -182,32 +182,57 @@ for i=1,48 do
         scenicPart("Wildflower",Vector3.new(.5,.7,.5),Vector3.new(x,5.6,z),({Color3.fromRGB(255,219,78),Color3.fromRGB(249,139,181),Color3.fromRGB(211,225,255)})[i%3+1],Enum.Material.Neon,Enum.PartType.Ball)
     end
 end
--- Distant islands form a horizon, deliberately separated from the playable sea.
-local islets={
-    {x=-280,z=-260,r=55,h=38},
-    {x=270,z=-300,r=70,h=53},
-    {x=-310,z=155,r=48,h=30},
-    {x=300,z=190,r=62,h=42},
-    {x=0,z=-350,r=85,h=70},
+-- Layered angular cliffs, not spherical blobs. All scenery is non-collidable.
+local function wedge(name,size,cf,color,material)
+    local p=Instance.new("WedgePart")
+    p.Name=name
+    p.Size=size
+    p.CFrame=cf
+    p.Anchored=true
+    p.CanCollide=false
+    p.Color=color
+    p.Material=material or Enum.Material.Slate
+    p.Parent=scenery
+    return p
+end
+local distant={
+    {x=-275,z=-285,w=105,d=92,h=31},
+    {x=268,z=-320,w=130,d=105,h=43},
+    {x=-320,z=180,w=90,d=85,h=27},
+    {x=330,z=175,w=115,d=95,h=34},
+    {x=0,z=-345,w=130,d=110,h=47},
 }
-for index,isle in ipairs(islets) do
-    scenicPart("IslandRock"..index,Vector3.new(isle.r*2,isle.h,isle.r*1.5),Vector3.new(isle.x,-2,isle.z),Color3.fromRGB(111,116,111),Enum.Material.Slate,Enum.PartType.Ball)
-    scenicPart("IslandGrass"..index,Vector3.new(isle.r*1.7,10,isle.r*1.25),Vector3.new(isle.x,isle.h*.37,isle.z),Color3.fromRGB(80,155,81),Enum.Material.Grass,Enum.PartType.Ball)
-    for t=1,4 do
-        local angle=t*math.pi/2
-        local tx=isle.x+math.sin(angle)*isle.r*.45
-        local tz=isle.z+math.cos(angle)*isle.r*.3
-        local top=isle.h*.37+5
-        scenicPart("IslandPineTrunk",Vector3.new(2,10,2),Vector3.new(tx,top+5,tz),Color3.fromRGB(95,70,54),Enum.Material.Wood)
-        scenicPart("IslandPineCrown",Vector3.new(11,17,11),Vector3.new(tx,top+15,tz),Color3.fromRGB(41,113,72),Enum.Material.Grass,Enum.PartType.Ball)
+for i,land in ipairs(distant) do
+    local baseY=-3
+    scenicPart("CliffPlateau"..i,Vector3.new(land.w,9,land.d),Vector3.new(land.x,baseY+7,land.z),Color3.fromRGB(110,113,107),Enum.Material.Slate)
+    scenicPart("GrassyTop"..i,Vector3.new(land.w-8,3,land.d-8),Vector3.new(land.x,baseY+13,land.z),Color3.fromRGB(75,161,83),Enum.Material.Grass)
+    for side=-1,1,2 do
+        wedge("AngledCliff",Vector3.new(land.w*.48,land.h,land.d*.65),
+            CFrame.new(land.x+side*land.w*.28,baseY+land.h*.5,land.z)*CFrame.Angles(0,side*math.rad(25),0),
+            Color3.fromRGB(119,127,126),Enum.Material.Rock)
+    end
+    for j=1,5 do
+        local px=land.x+((j*31)%math.floor(land.w-20))-(land.w-20)/2
+        local pz=land.z+((j*17)%math.floor(land.d-20))-(land.d-20)/2
+        scenicPart("IslandPineTrunk",Vector3.new(2,9,2),Vector3.new(px,baseY+20,pz),Color3.fromRGB(101,72,52),Enum.Material.Wood)
+        for tier=1,3 do
+            wedge("PineNeedles",Vector3.new(11-tier*2,6,11-tier*2),
+                CFrame.new(px,baseY+22+tier*3,pz)*CFrame.Angles(0,math.rad(45),0),
+                Color3.fromRGB(36,113+tier*8,70),Enum.Material.Grass)
+        end
     end
 end
--- Mountain skyline, far behind the fishing pier.
-for i=1,5 do
-    local x=(i-3)*68
-    local h=65+((i*17)%43)
-    scenicPart("Mountain"..i,Vector3.new(90,h,75),Vector3.new(x,h*.32,-405),Color3.fromRGB(97,114,126),Enum.Material.Slate,Enum.PartType.Ball)
-    scenicPart("SnowCap"..i,Vector3.new(44,18,40),Vector3.new(x,h*.73,-405),Color3.fromRGB(229,239,245),Enum.Material.Snow,Enum.PartType.Ball)
+-- Jagged mountain ridges: intersecting angled rock faces with separate snow ridges.
+for i=1,7 do
+    local x=(i-4)*64
+    local h=70+((i*19)%55)
+    local z=-445-((i*13)%38)
+    wedge("MountainFace"..i,Vector3.new(88,h,90),CFrame.new(x,-4+h*.5,z)*CFrame.Angles(0,math.rad(25),0),
+        Color3.fromRGB(94,112,130),Enum.Material.Rock)
+    wedge("MountainShadow"..i,Vector3.new(68,h*.82,75),CFrame.new(x+20,-4+h*.43,z+8)*CFrame.Angles(0,math.rad(145),0),
+        Color3.fromRGB(69,91,115),Enum.Material.Slate)
+    wedge("SnowRidge"..i,Vector3.new(32,h*.26,40),CFrame.new(x-4,-4+h*.84,z-8)*CFrame.Angles(0,math.rad(25),0),
+        Color3.fromRGB(234,242,250),Enum.Material.Snow)
 end
 -- A little dockside detail and a lighthouse at the far end of the main island.
 for i=1,6 do
