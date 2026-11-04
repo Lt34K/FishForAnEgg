@@ -3,6 +3,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local RunService = game:GetService("RunService")
+local MarketplaceService = game:GetService("MarketplaceService")
 local Config = require(script.Parent:WaitForChild("GameConfig"))
 local store = DataStoreService:GetDataStore(RunService:IsStudio() and "FishEgg_Studio_Prototype_V1" or "FishEgg_Live_V1")
 
@@ -449,7 +450,7 @@ local function save(player)
     busySave[player]=true
     local slots={}
     for i,e in pairs(d.slots) do if e then slots[i]={egg=e.egg,hatched=e.hatched,readyAt=e.readyAt,creature=e.creature} end end
-    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel,premiumRod=d.premiumRod,premiumEggs=d.premiumEggs,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus}
+    local payload={cash=d.cash,rod=d.rod,base=d.base,inventory=table.clone(d.inventory),slots=slots,index=d.index,indexVersion=2,skin=d.skin,decorationLevel=d.decorationLevel,premiumRod=d.premiumRod,premiumEggs=d.premiumEggs,luckLevel=d.luckLevel,luckExpires=d.luckExpires,luckBonus=d.luckBonus,processedReceipts=d.processedReceipts}
     local ok,err=pcall(function()
         store:UpdateAsync("P_"..player.UserId,function() return payload end)
     end)
@@ -552,6 +553,74 @@ action.OnServerEvent:Connect(function(player,command,requested)
     elseif command=="Sync" then snapshot(player) end
 end)
 
+-- Roblox grants Developer Products only after a verified server receipt.
+-- Keep a bounded receipt history in the same player DataStore as rewards.
+MarketplaceService.ProcessReceipt=function(receiptInfo)
+    local player=Players:GetPlayerByUserId(receiptInfo.PlayerId)
+    local d=player and data[player]
+    if not d or not d.loaded then return Enum.ProductPurchaseDecision.NotProcessedYet end
+    local selected
+    for _,product in ipairs(Config.PremiumProducts) do
+        if product.productId>0 and product.productId==receiptInfo.ProductId then selected=product break end
+    end
+    if not selected then return Enum.ProductPurchaseDecision.NotProcessedYet end
+    while busySave[player] do task.wait(.1) end
+    busySave[player]=true
+    local receiptId=tostring(receiptInfo.PurchaseId)
+    local success,result=pcall(function()
+        return store:UpdateAsync("P_"..player.UserId,function(saved)
+            saved=type(saved)=="table" and saved or {}
+            local receipts=type(saved.processedReceipts)=="table" and saved.processedReceipts or {}
+            if receipts[receiptId] then return saved end
+            -- Use the live player's progression as the base for the purchase.
+            saved.cash=d.cash
+            saved.rod=d.rod
+            saved.base=d.base
+            saved.inventory=table.clone(d.inventory)
+            saved.slots={}
+            for slot,entry in pairs(d.slots) do
+                saved.slots[slot]={egg=entry.egg,hatched=entry.hatched,readyAt=entry.readyAt,creature=entry.creature}
+            end
+            saved.index=d.index
+            saved.indexVersion=2
+            saved.skin=d.skin
+            saved.decorationLevel=d.decorationLevel
+            saved.luckLevel=d.luckLevel
+            saved.luckBonus=d.luckBonus
+            saved.luckExpires=d.luckExpires
+            saved.premiumRod=d.premiumRod
+            saved.premiumEggs=d.premiumEggs
+            if selected.key=="SpecialEgg" then
+                saved.premiumEggs=(saved.premiumEggs or 0)+1
+            elseif selected.key=="SpecialRod" then
+                saved.premiumRod=true
+            elseif selected.key=="LuckBoost" then
+                saved.luckBonus=1
+                saved.luckExpires=math.max(os.time(),saved.luckExpires or 0)+1800
+            elseif selected.key=="CashPack" then
+                saved.cash=(saved.cash or 0)+100000
+            end
+            receipts[receiptId]=true
+            saved.processedReceipts=receipts
+            return saved
+        end)
+    end)
+    if success and type(result)=="table" then
+        local alreadyGranted=d.processedReceipts[receiptId]==true
+        d.processedReceipts[receiptId]=true
+        if not alreadyGranted then
+            if selected.key=="SpecialEgg" then d.premiumEggs=(d.premiumEggs or 0)+1
+            elseif selected.key=="SpecialRod" then d.premiumRod=true grantRod(player)
+            elseif selected.key=="LuckBoost" then d.luckBonus=1 d.luckExpires=math.max(os.time(),d.luckExpires or 0)+1800
+            elseif selected.key=="CashPack" then d.cash+=100000 updateCash(player) end
+            notify(player,"Achat Robux reçu : "..selected.name.." !")
+            snapshot(player)
+        end
+    end
+    busySave[player]=nil
+    return success and Enum.ProductPurchaseDecision.PurchaseGranted or Enum.ProductPurchaseDecision.NotProcessedYet
+end
+
 Players.PlayerAdded:Connect(function(player)
     local ok,saved=pcall(function() return store:GetAsync("P_"..player.UserId) end)
     if not ok then
@@ -573,7 +642,7 @@ Players.PlayerAdded:Connect(function(player)
         cash=math.max(0,tonumber(saved.cash) or 0),
         rod=math.clamp(math.floor(tonumber(saved.rod) or 1),1,#Config.Rods),
         base=math.clamp(math.floor(tonumber(saved.base) or 1),1,#Config.BaseSlots),
-        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),luckLevel=math.clamp(math.floor(tonumber(saved.luckLevel) or 0),0,#Config.LuckUpgrades),luckExpires=tonumber(saved.luckExpires) or 0,luckBonus=math.clamp(tonumber(saved.luckBonus) or 0,0,1),premiumRod=saved.premiumRod==true,premiumEggs=math.clamp(math.floor(tonumber(saved.premiumEggs) or 0),0,999),loaded=ok
+        plot=plot,inventory={},slots={},index={},skin=1,decorationLevel=math.clamp(math.floor(tonumber(saved.decorationLevel) or 0),0,#Config.BaseDecorations),luckLevel=math.clamp(math.floor(tonumber(saved.luckLevel) or 0),0,#Config.LuckUpgrades),luckExpires=tonumber(saved.luckExpires) or 0,luckBonus=math.clamp(tonumber(saved.luckBonus) or 0,0,1),premiumRod=saved.premiumRod==true,premiumEggs=math.clamp(math.floor(tonumber(saved.premiumEggs) or 0),0,999),processedReceipts=type(saved.processedReceipts)=="table" and saved.processedReceipts or {},loaded=ok
     }
     if type(saved.index)=="table" then
         for key,value in pairs(saved.index) do
