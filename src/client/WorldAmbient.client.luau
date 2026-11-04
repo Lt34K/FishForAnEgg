@@ -16,8 +16,8 @@ for _,obj in ipairs(premium:GetDescendants()) do
     if obj:IsA("BasePart") then
         if obj.Name=="FloatingBuoy" or obj.Name=="BuoyBand" then
             table.insert(buoys,{p=obj,base=obj.CFrame})
-        elseif obj.Name=="CoastalWaterShimmer" then
-            table.insert(shimmers,{p=obj,index=#shimmers+1})
+        elseif obj.Name=="CoastalWaterShimmer" or (obj.Name=="SeaWaveGlint" and #shimmers%3==0) then
+            table.insert(shimmers,{p=obj,index=#shimmers+1,base=obj.Transparency})
         elseif obj.Name=="SeabirdWing" then
             table.insert(birds,{p=obj,base=obj.CFrame,index=#birds+1})
         elseif string.sub(obj.Name,1,4)=="Boat" and obj.Name~="BoatWake" then
@@ -49,7 +49,7 @@ connection=RunService.Heartbeat:Connect(function(dt)
         item.p.CFrame=item.base+CFrame.new(0,math.sin(t*1.65+math.floor((index-1)/2))*.28,0).Position
     end
     for _,item in ipairs(shimmers) do
-        item.p.Transparency=.55+math.sin(t*1.5+item.index*.8)*.09
+        item.p.Transparency=math.clamp(item.base+math.sin(t*1.5+item.index*.8)*.09,0,1)
     end
     for _,item in ipairs(birds) do
         item.p.CFrame=item.base*CFrame.new(math.sin(t*.36+item.index)*1.2,math.sin(t*1.1+item.index)*.35,0)
