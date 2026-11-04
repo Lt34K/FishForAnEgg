@@ -135,4 +135,89 @@ end
 createShop("Rods",-23,"CANNES","Acheter avec des $",Color3.fromRGB(119,76,42),Color3.fromRGB(245,199,87))
 createShop("Robux",23,"BOUTIQUE ROBUX","Bonus et exclusivités",Color3.fromRGB(63,53,122),Color3.fromRGB(112,244,213))
 createShop("Luck",0,"BOOSTS CHANCE","Potions et améliorations",Color3.fromRGB(37,116,68),Color3.fromRGB(139,255,112))
-print("Fish for an Egg : stands Cannes et Robux créés")
+
+-- Coastal scenery: deterministic, lightweight, and outside the six build plots.
+local scenery=Instance.new("Folder")
+scenery.Name="CoastalScenery"
+scenery.Parent=world
+local function scenicPart(name,size,pos,color,material,shape)
+    local p=Instance.new("Part")
+    p.Name=name
+    p.Size=size
+    p.Position=pos
+    p.Color=color
+    p.Material=material or Enum.Material.SmoothPlastic
+    p.Anchored=true
+    p.CanCollide=false
+    if shape then p.Shape=shape end
+    p.Parent=scenery
+    return p
+end
+local function tree(x,z,scale,palm)
+    local trunk=scenicPart("TreeTrunk",Vector3.new(1.5*scale,8*scale,1.5*scale),Vector3.new(x,5+4*scale,z),Color3.fromRGB(116,77,48),Enum.Material.Wood)
+    if palm then
+        for i=1,5 do
+            local angle=i*math.pi*2/5
+            local leaf=scenicPart("PalmFrond",Vector3.new(1.8*scale,.6*scale,8*scale),Vector3.new(x+math.sin(angle)*2.7*scale,5+8.2*scale,z+math.cos(angle)*2.7*scale),Color3.fromRGB(46,156,82),Enum.Material.Grass)
+            leaf.Orientation=Vector3.new(0,math.deg(angle),12)
+        end
+    else
+        for _,offset in ipairs({Vector3.new(0,7,0),Vector3.new(2,5,0),Vector3.new(-2,5,0)}) do
+            scenicPart("TreeCanopy",Vector3.new(6*scale,6*scale,6*scale),Vector3.new(x,5+4*scale,z)+offset*scale,Color3.fromRGB(48,143+math.floor(scale*8),77),Enum.Material.Grass,Enum.PartType.Ball)
+        end
+    end
+end
+for _,z in ipairs({-52,-26,4,30,55}) do
+    tree(-115,z,.8,z<-30)
+    tree(115,z,.8,z<-30)
+end
+for _,x in ipairs({-103,-88,88,103}) do
+    tree(x,60,.7,false)
+end
+local rng=Random.new(82716)
+for i=1,48 do
+    local x=rng:NextNumber(-116,116)
+    local z=rng:NextNumber(-65,65)
+    if math.abs(x)>100 or math.abs(z)>54 then
+        scenicPart("Wildflower",Vector3.new(.5,.7,.5),Vector3.new(x,5.6,z),({Color3.fromRGB(255,219,78),Color3.fromRGB(249,139,181),Color3.fromRGB(211,225,255)})[i%3+1],Enum.Material.Neon,Enum.PartType.Ball)
+    end
+end
+-- Distant islands form a horizon, deliberately separated from the playable sea.
+local islets={
+    {x=-280,z=-260,r=55,h=38},
+    {x=270,z=-300,r=70,h=53},
+    {x=-310,z=155,r=48,h=30},
+    {x=300,z=190,r=62,h=42},
+    {x=0,z=-350,r=85,h=70},
+}
+for index,isle in ipairs(islets) do
+    scenicPart("IslandRock"..index,Vector3.new(isle.r*2,isle.h,isle.r*1.5),Vector3.new(isle.x,-2,isle.z),Color3.fromRGB(111,116,111),Enum.Material.Slate,Enum.PartType.Ball)
+    scenicPart("IslandGrass"..index,Vector3.new(isle.r*1.7,10,isle.r*1.25),Vector3.new(isle.x,isle.h*.37,isle.z),Color3.fromRGB(80,155,81),Enum.Material.Grass,Enum.PartType.Ball)
+    for t=1,4 do
+        local angle=t*math.pi/2
+        local tx=isle.x+math.sin(angle)*isle.r*.45
+        local tz=isle.z+math.cos(angle)*isle.r*.3
+        local top=isle.h*.37+5
+        scenicPart("IslandPineTrunk",Vector3.new(2,10,2),Vector3.new(tx,top+5,tz),Color3.fromRGB(95,70,54),Enum.Material.Wood)
+        scenicPart("IslandPineCrown",Vector3.new(11,17,11),Vector3.new(tx,top+15,tz),Color3.fromRGB(41,113,72),Enum.Material.Grass,Enum.PartType.Ball)
+    end
+end
+-- Mountain skyline, far behind the fishing pier.
+for i=1,5 do
+    local x=(i-3)*68
+    local h=65+((i*17)%43)
+    scenicPart("Mountain"..i,Vector3.new(90,h,75),Vector3.new(x,h*.32,-405),Color3.fromRGB(97,114,126),Enum.Material.Slate,Enum.PartType.Ball)
+    scenicPart("SnowCap"..i,Vector3.new(44,18,40),Vector3.new(x,h*.73,-405),Color3.fromRGB(229,239,245),Enum.Material.Snow,Enum.PartType.Ball)
+end
+-- A little dockside detail and a lighthouse at the far end of the main island.
+for i=1,6 do
+    scenicPart("PierBollard",Vector3.new(1.2,2,1.2),Vector3.new((i%2==0 and 1 or -1)*8.8,6.4,-76-math.floor((i-1)/2)*26),Color3.fromRGB(90,62,46),Enum.Material.Wood)
+end
+scenicPart("LighthouseBase",Vector3.new(6,18,6),Vector3.new(-104,14,48),Color3.fromRGB(238,234,221),Enum.Material.Concrete,Enum.PartType.Cylinder)
+local beacon=scenicPart("LighthouseBeacon",Vector3.new(7,3,7),Vector3.new(-104,24.5,48),Color3.fromRGB(255,233,133),Enum.Material.Neon,Enum.PartType.Ball)
+local beaconLight=Instance.new("PointLight")
+beaconLight.Range=38
+beaconLight.Brightness=2
+beaconLight.Parent=beacon
+
+print("Fish for an Egg : boutiques et paysages côtiers créés")
